@@ -5,6 +5,7 @@ import Hero from "./components/Hero";
 import Skills from "./components/Skills";
 import Projects from "./components/Projects";
 import Contact from "./components/Contact";
+import Education from './components/Education';
 
 function App() {
   const [activeSection, setActiveSection] = useState("home");
@@ -51,6 +52,7 @@ function App() {
         <section id="home" className="glass fade-section" style={{ height: "90vh", marginBottom: "60px" }}><Hero /></section>
         <section id="skills" className="glass fade-section" style={{ minHeight: "70vh", marginBottom: "60px" }}><Skills /></section>
         <section id="projects" className="glass fade-section" style={{ height: "120vh", marginBottom: "60px" }}><Projects /></section>
+        <section id="education" className ="glass fade-section" style={{ minHeight: "100vh", marginBottom: "60px" }}><Education /></section>
         <section id="contact" className="glass fade-section" style={{ minHeight: "20vh", marginBottom: "60px" }}><Contact /></section>
       </main>
     </div>

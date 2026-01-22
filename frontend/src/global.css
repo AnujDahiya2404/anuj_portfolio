@@ -97,7 +97,7 @@ p {
 .glass-button:hover {
   background-size: 110% 100%, 100% 100%;
   border-color: var(--accent-color);
-  box-shadow: 0 0 0 2px rgba(79, 140, 255, 0.25);
+  
   transform: scale(1.1);
   color: #ffffff;
 }

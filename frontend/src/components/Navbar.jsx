@@ -33,6 +33,16 @@ const sections = [
     ) 
   },
   { 
+    id: "education", 
+    label: "Education", 
+    renderIcon: (isActive) => (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth={isActive ? 2.5 : 1.2} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+      </svg>
+    ) 
+  },
+  { 
     id: "contact", 
     label: "Contact", 
     renderIcon: (isActive) => (
@@ -67,7 +77,7 @@ const Navbar = ({ activeSection }) => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        gap: "16px",         // Reduced gap between icons (was 24px)
+        gap: "16px",         // Reduced gap between icons
         borderRadius: "20px",
         zIndex: 10
       }}

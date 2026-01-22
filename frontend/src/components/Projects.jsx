@@ -32,7 +32,17 @@ const Projects = () => {
         flexDirection: "column"
       }}
     >
-      <h2 style={{ fontSize: "32px", marginBottom: "20px" }}>
+      {/* NEW CENTERED HEADING STYLE */}
+      <h2
+        style={{
+          fontSize: "48px",
+          fontWeight: "700",
+          marginBottom: "40px",
+          color: "black",
+          textAlign: "center",
+          letterSpacing: "-1px"
+        }}
+      >
         Projects
       </h2>
 
@@ -66,9 +76,9 @@ const Projects = () => {
 
           {/* PROJECT CARD COMPONENT */}
           <ProjectCard
-            key={currentIndex}    // Triggers the animation on change
+            key={currentIndex}
             project={projects[currentIndex]}
-            direction={direction} // Passes the slide class
+            direction={direction}
           />
 
           {/* RIGHT ARROW */}

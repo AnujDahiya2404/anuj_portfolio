@@ -17,7 +17,19 @@ const Skills = () => {
 
   return (
     <div style={{ padding: "40px" }}>
-      <h2 style={{ fontSize: "32px", marginBottom: "32px" }}>Skills</h2>
+      {/* ✅ UPDATED HEADING STYLE */}
+      <h2 
+        style={{ 
+          fontSize: "48px",
+          fontWeight: "700",
+          marginBottom: "40px",
+          color: "black",
+          textAlign: "center",
+          letterSpacing: "-1px"
+        }}
+      >
+        Skills
+      </h2>
 
       {Object.entries(grouped).map(([category, items]) => (
         <div key={category} style={{ marginBottom: "28px" }}>
@@ -37,7 +49,7 @@ const Skills = () => {
               key={skill._id}
               name={skill.name}
               level={skill.level}
-              color={skill.color}   // ✅ THIS MUST EXIST
+              color={skill.color}
             />
           ))}
           </div>
