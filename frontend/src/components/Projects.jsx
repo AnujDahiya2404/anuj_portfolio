@@ -4,74 +4,95 @@ import ProjectCard from "./ProjectCard";
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
-  const [index, setIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState("slide-from-right");
 
   useEffect(() => {
-    getProjects().then((data) => {
-      if (Array.isArray(data)) setProjects(data);
-    });
+    getProjects().then(setProjects);
   }, []);
 
-  const visibleProjects = projects.slice(index, index + 2);
-
-  const next = () => {
-    if (index + 2 < projects.length) {
-      setIndex(index + 2);
-    }
+  const nextProject = () => {
+    setDirection("slide-from-right");
+    setCurrentIndex((prev) => (prev + 1) % projects.length);
   };
 
-  const prev = () => {
-    if (index - 2 >= 0) {
-      setIndex(index - 2);
-    }
+  const prevProject = () => {
+    setDirection("slide-from-left");
+    setCurrentIndex((prev) => (prev === 0 ? projects.length - 1 : prev - 1));
   };
+
+  if (!projects.length) return null;
 
   return (
-    <div style={{ padding: "40px", height: "100%" }}>
-      <h2 style={{ fontSize: "32px", marginBottom: "24px" }}>
+    <div
+      style={{
+        height: "100%",
+        padding: "40px",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+      <h2 style={{ fontSize: "32px", marginBottom: "20px" }}>
         Projects
       </h2>
 
-      {/* Cards */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "24px",
-          marginBottom: "24px"
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          gap: "20px"
         }}
       >
-        {visibleProjects.map((project) => (
-          <ProjectCard key={project._id} project={project} />
-        ))}
-      </div>
-
-      {/* Controls */}
-      <div style={{ display: "flex", gap: "12px" }}>
-        <button onClick={prev} disabled={index === 0} style={navBtn}>
-          ◀
-        </button>
-
-        <button
-          onClick={next}
-          disabled={index + 2 >= projects.length}
-          style={navBtn}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "24px",
+            width: "100%",
+            height: "100%"
+          }}
         >
-          ▶
-        </button>
+          {/* LEFT ARROW */}
+          <button
+            onClick={prevProject}
+            className="glass arrow-btn"
+            title="Previous Project"
+          >
+            ◀
+          </button>
+
+          {/* PROJECT CARD COMPONENT */}
+          <ProjectCard
+            key={currentIndex}    // Triggers the animation on change
+            project={projects[currentIndex]}
+            direction={direction} // Passes the slide class
+          />
+
+          {/* RIGHT ARROW */}
+          <button
+            onClick={nextProject}
+            className="glass arrow-btn"
+            title="Next Project"
+          >
+            ▶
+          </button>
+        </div>
+
+        {/* DOT INDICATORS */}
+        <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
+          {projects.map((_, idx) => (
+            <div 
+              key={idx}
+              className={`carousel-dot ${idx === currentIndex ? "active" : ""}`}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
-};
-
-const navBtn = {
-  padding: "8px 14px",
-  borderRadius: "8px",
-  fontSize: "14px",
-  cursor: "pointer",
-  background: "rgba(255,255,255,0.2)",
-  backdropFilter: "blur(4px)",
-  border: "1px solid rgba(255,255,255,0.25)"
 };
 
 export default Projects;

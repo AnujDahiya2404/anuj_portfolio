@@ -19,80 +19,82 @@ const Contact = () => {
         padding: "40px",
         display: "flex",
         flexDirection: "column",
-        justifyContent: "center"
+        justifyContent: "center",
+        alignItems: "center", // Center horizontally
+        textAlign: "center"   // Center text
       }}
     >
-      <h2 style={{ fontSize: "32px", marginBottom: "12px" }}>
-        Contact
+      <h2 style={{ fontSize: "48px", marginBottom: "20px", fontWeight: "bold" }}>
+        Get In Touch
       </h2>
 
-      <p style={{ opacity: 0.8, marginBottom: "32px" }}>
+      <p style={{ opacity: 0.8, marginBottom: "40px", fontSize: "18px", maxWidth: "500px" }}>
         Let’s connect — I’m always open to opportunities and discussions.
       </p>
 
+      {/* BUTTONS ROW */}
       <div
         style={{
           display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-          maxWidth: "320px"
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "20px",
+          width: "100%"
         }}
       >
+        {/* 1. EMAIL */}
         {socialLinks.email && (
           <a
             href={`mailto:${socialLinks.email}`}
-            style={linkStyle}
+            className="glass-button email"
           >
-            📧 {socialLinks.email}
+            <span>Email</span>
           </a>
         )}
 
+        {/* 2. GITHUB */}
         {socialLinks.github && (
           <a
             href={socialLinks.github}
             target="_blank"
             rel="noreferrer"
-            style={linkStyle}
+            className="glass-button github"
           >
-            💻 GitHub
+            <span>GitHub</span>
           </a>
         )}
 
+        {/* 3. LINKEDIN */}
         {socialLinks.linkedin && (
           <a
             href={socialLinks.linkedin}
             target="_blank"
             rel="noreferrer"
-            style={linkStyle}
+            className="glass-button linkedin"
           >
-            🔗 LinkedIn
+            <span>LinkedIn</span>
           </a>
         )}
 
+        {/* 4. RESUME */}
         {resumeLink && (
           <a
             href={resumeLink}
             target="_blank"
             rel="noreferrer"
-            style={linkStyle}
+            className="glass-button resume"
           >
-            📄 Resume
+            <span>Resume</span>
           </a>
         )}
       </div>
+      
+      {/* Copyright/Footer */}
+      <div style={{ marginTop: "60px", opacity: 0.5, fontSize: "14px" }}>
+        © {new Date().getFullYear()} {profile.name}. All rights reserved.
+      </div>
     </div>
   );
-};
-
-const linkStyle = {
-  textDecoration: "none",
-  padding: "12px 16px",
-  borderRadius: "10px",
-  border: "1px solid rgba(255,255,255,0.25)",
-  background: "rgba(255,255,255,0.08)",
-  backdropFilter: "blur(6px)",
-  color: "#000",
-  fontSize: "14px"
 };
 
 export default Contact;

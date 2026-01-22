@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Navbar from "./components/Navbar";
 import "./glass.css";
 import Hero from "./components/Hero";
@@ -8,6 +8,9 @@ import Contact from "./components/Contact";
 
 function App() {
   const [activeSection, setActiveSection] = useState("home");
+  const scrollRef = useRef(null);
+  const [projects, setProjects] = useState([]);
+
 
   useEffect(() => {
     const sections = document.querySelectorAll("section");
@@ -17,11 +20,13 @@ function App() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveSection(entry.target.id);
+            entry.target.classList.add("visible");
           }
         });
       },
       {
-        threshold: 0.6
+        root: scrollRef.current,
+        threshold: 0.3
       }
     );
 
@@ -35,6 +40,7 @@ function App() {
       <Navbar activeSection={activeSection} />
 
       <main
+        ref={scrollRef}
         style={{
           marginLeft: "120px",
           padding: "32px",
@@ -42,10 +48,10 @@ function App() {
           overflowY: "auto"
         }}
       >
-        <section id="home" className="glass" style={{ height: "90vh", marginBottom: "40px" }}><Hero /></section>
-        <section id="skills" className="glass" style={{ height: "90vh", marginBottom: "40px" }}><Skills /></section>
-        <section id="projects" className="glass" style={{ height: "90vh", marginBottom: "40px" }}><Projects /></section>
-        <section id="contact" className="glass" style={{ height: "90vh", marginBottom: "40px" }}><Contact /></section>
+        <section id="home" className="glass fade-section" style={{ height: "90vh", marginBottom: "60px" }}><Hero /></section>
+        <section id="skills" className="glass fade-section" style={{ minHeight: "70vh", marginBottom: "60px" }}><Skills /></section>
+        <section id="projects" className="glass fade-section" style={{ height: "120vh", marginBottom: "60px" }}><Projects /></section>
+        <section id="contact" className="glass fade-section" style={{ minHeight: "20vh", marginBottom: "60px" }}><Contact /></section>
       </main>
     </div>
   );

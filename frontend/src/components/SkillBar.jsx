@@ -1,27 +1,33 @@
-const SkillBar = ({ name, level }) => {
+import { useState } from "react";
+
+const SkillBar = ({ name, level = 0, color = "#999" }) => {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        width: "220px",
-        borderRadius: "999px",
-        border: "2px solid #000",
-        padding: "4px",
         position: "relative",
-        fontSize: "14px",
-        fontWeight: "600",
-        overflow: "hidden"
+        padding: "6px 14px",
+        borderRadius: "999px",
+        border: `1.5px solid ${hovered ? color : "rgba(0,0,0,0.25)"}`,
+        transition: "transform 0.25s ease, border-color 0.25s ease",
+        overflow: "hidden",
+        cursor: "default",
+        transform: hovered ? "scale(1.05)" : "scale(1)",
+        transition: "transform 0.25s ease",
+        width: "fit-content" // ✅ text-sized pill
       }}
     >
       {/* FILL */}
       <div
         style={{
-          width: `${level}%`,
-          height: "100%",
-          background: "#d9d9d9",
-          borderRadius: "999px",
           position: "absolute",
-          top: 0,
-          left: 0,
+          inset: 0,
+          width: hovered ? "100%" : `${level}%`,
+          backgroundColor: hovered ? color : "rgba(0,0,0,0.15)",
+          transition: "width 0.25s ease, background-color 0.25s ease",
           zIndex: 0
         }}
       />
@@ -31,8 +37,10 @@ const SkillBar = ({ name, level }) => {
         style={{
           position: "relative",
           zIndex: 1,
-          paddingLeft: "12px",
-          whiteSpace: "nowrap"
+          fontSize: "14px",
+          fontWeight: "500",
+          whiteSpace: "nowrap",
+          color: "#0e0e0e"
         }}
       >
         {name}

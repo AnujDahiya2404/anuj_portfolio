@@ -17,7 +17,11 @@ const skillSchema = new mongoose.Schema(
       required: true,
       min: 0,
       max: 100
-    }
+    },
+    color: {
+    type: String, // hex or rgb
+    required: true
+  }
   },
   { timestamps: true }
 );

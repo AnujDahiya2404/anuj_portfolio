@@ -32,13 +32,14 @@ const Skills = () => {
               gap: "12px"
             }}
           >
-            {items.map((skill) => (
-                <SkillBar
-                    key={skill._id}
-                    name={skill.name}
-                    level={skill.level}
-                />
-                ))}
+          {items.map((skill) => (
+            <SkillBar
+              key={skill._id}
+              name={skill.name}
+              level={skill.level}
+              color={skill.color}   // ✅ THIS MUST EXIST
+            />
+          ))}
           </div>
         </div>
       ))}

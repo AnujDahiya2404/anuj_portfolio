@@ -1,105 +1,97 @@
-const ProjectCard = ({ project }) => {
+import React from "react";
+
+const ProjectCard = ({ project, direction }) => {
   return (
     <div
-      className="glass"
+      className={direction} // Applies the slide animation
       style={{
-        padding: "0",
+        flex: 1,
+        width: "100%",
+        maxWidth: "1000px",
+        margin: "0 auto",
         display: "flex",
         flexDirection: "column",
-        height: "100%",
-        overflow: "hidden"
+        padding: "10px"
       }}
     >
-      {/* IMAGE */}
-      {project.image && (
-        <div
-          style={{
-            width: "100%",
-            height: "160px",
-            overflow: "hidden"
-          }}
-        >
-          <img
-            src={project.image}
-            alt={project.title}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover"
-            }}
-          />
-        </div>
-      )}
+      {/* CARD IMAGE */}
+      <div
+        className="project-img"
+        style={{
+          height: "300px",
+          width: "100%",
+          backgroundColor: "rgba(0,0,0,0.2)",
+          backgroundImage: project.image ? `url(${project.image})` : "none",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          borderRadius: "15px",
+          marginBottom: "24px",
+          border: "1px solid rgba(255, 255, 255, 0.1)"
+        }}
+      />
 
       {/* CONTENT */}
-      <div
-        style={{
-          padding: "20px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "14px",
-          flex: 1
-        }}
-      >
-        <h3 style={{ fontSize: "20px" }}>{project.title}</h3>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 8px" }}>
+        
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+          <h3 style={{ fontSize: "28px", margin: 0 }}>
+            {project.title}
+          </h3>
+          
+          {/* TECH STACK */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "flex-end", maxWidth: "40%" }}>
+            {project.techStack.map((tech, i) => (
+              <span key={i} className="tech-pill">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
 
-        <p style={{ fontSize: "14px", opacity: 0.85 }}>
+        {/* DESCRIPTION */}
+        <p
+          className="custom-scroll"
+          style={{
+            fontSize: "16px",
+            lineHeight: "1.6",
+            marginBottom: "24px",
+            opacity: 0.85,
+            whiteSpace: "pre-line",
+            height: "140px",
+            overflowY: "auto",
+            paddingRight: "8px"
+          }}
+        >
           {project.description}
         </p>
 
-        {/* Tech Stack */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-          {project.techStack.map((tech, i) => (
-            <span
-              key={i}
-              style={{
-                fontSize: "12px",
-                padding: "4px 8px",
-                borderRadius: "6px",
-                border: "1px solid rgba(255,255,255,0.25)"
-              }}
+        {/* ACTION BUTTONS */}
+        <div style={{ display: "flex", gap: "16px", marginTop: "auto" }}>
+          {project.githubLink && (
+            <a
+              href={project.githubLink}
+              target="_blank"
+              rel="noreferrer"
+              className="glass-button github"
             >
-              {tech}
-            </span>
-          ))}
-        </div>
-
-        {/* Buttons */}
-        <div style={{ marginTop: "auto", display: "flex", gap: "12px" }}>
-          <a
-            href={project.githubLink}
-            target="_blank"
-            rel="noreferrer"
-            style={buttonStyle}
-          >
-            GitHub
-          </a>
-
+              <span>GitHub</span>
+            </a>
+          )}
+          
           {project.liveLink && (
             <a
               href={project.liveLink}
               target="_blank"
               rel="noreferrer"
-              style={buttonStyle}
+              className="glass-button secondary"
             >
-              Live Demo
+              <span>Live Demo</span>
             </a>
           )}
         </div>
       </div>
     </div>
   );
-};
-
-const buttonStyle = {
-  padding: "8px 14px",
-  borderRadius: "8px",
-  textDecoration: "none",
-  fontSize: "13px",
-  background: "rgba(255,255,255,0.2)",
-  backdropFilter: "blur(4px)",
-  border: "1px solid rgba(255,255,255,0.25)",
-  color: "#000"
 };
 
 export default ProjectCard;

@@ -5,6 +5,25 @@
   box-sizing: border-box;
 }
 
+:root {
+  --accent-color: #4f8cff; /* change later if you want */
+}
+
+.linkedin {
+  --accent-color: #0a66c2;
+}
+.email{
+  --accent-color: #EA4335;
+}
+
+.github {
+  --accent-color: #181717;
+}
+
+.live {
+  --accent-color: var(--global-accent);
+}
+
 html,
 body {
   height: 100%;
@@ -21,4 +40,189 @@ body {
   background-repeat: no-repeat;
 }
 
+body {
+  color: #0e0e0e;
+}
 
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-weight: 700;
+}
+
+h2 {
+  font-weight: 600;
+}
+
+p {
+  line-height: 1.7;
+}
+
+.glass-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 26px;
+  border-radius: 12px;
+
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  color: #0e0e0e;
+
+  border: 1.5px solid rgba(0, 0, 0, 0.25);
+
+  background:
+    linear-gradient(90deg, var(--accent-color), var(--accent-color)),
+    rgba(255, 255, 255, 0.08);
+  background-size: 0% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: left center, center;
+
+  backdrop-filter: blur(6px);
+
+  cursor: pointer;
+
+  transition:
+    background-size 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease,
+    color 0.25s ease;
+}
+
+.glass-button:hover {
+  background-size: 110% 100%, 100% 100%;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(79, 140, 255, 0.25);
+  transform: scale(1.1);
+  color: #ffffff;
+}
+
+.glass-button:active {
+  transform: scale(0.9);
+}
+
+.fade-section {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.arrow-btn {
+  all: unset;
+  cursor: pointer;
+  padding: 16px;
+  border-radius: 50%;
+  font-size: 24px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.arrow-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.arrow-btn:active {
+  transform: scale(0.95);
+}
+
+/* Tech Stack Pills */
+/* Tech Stack Pills */
+.tech-pill {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  
+  /* CHANGED: Matches SkillBar unhovered state (dark grey transparent) */
+  background-color: rgba(0, 0, 0, 0.15); 
+  
+  /* Optional: Darken border slightly to match the darker theme */
+  border: 1px solid rgba(0, 0, 0, 0.1); 
+  
+  white-space: nowrap;
+  color: #0e0e0e; /* Ensures text remains dark and readable */
+  transition: transform 0.25s ease;
+}
+
+.tech-pill:hover{
+  transform: scale(1.1);
+}
+
+/* Carousel Dots */
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.carousel-dot.active {
+  background-color: #fff;
+  transform: scale(1.2);
+}
+
+/* Project Image Hover Effect */
+.project-img {
+  transition: transform 0.25s ease;
+}
+
+.project-img:hover {
+  transform: scale(1.02); /* Slight zoom */
+}
+
+/* --- PROJECT TRANSITIONS --- */
+
+
+/* --- PROJECT TRANSITIONS --- */
+
+/* 1. Next Button Click: Slide in from Right */
+.slide-from-right {
+  /* Changed from 0.4s cubic-bezier to 0.25s ease */
+  animation: slideInRight 0.25s ease forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px); /* Reduced distance slightly for the faster time */
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
+
+/* 2. Prev Button Click: Slide in from Left */
+.slide-from-left {
+  /* Changed from 0.4s cubic-bezier to 0.25s ease */
+  animation: slideInLeft 0.25s ease forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
