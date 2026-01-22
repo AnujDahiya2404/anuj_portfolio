@@ -1,0 +1,21 @@
+.glass {
+  background-color: rgba(255, 255, 255, 0.08); /* high bleeding */
+
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  box-shadow: 5px 5px 8px rgba(14, 14, 14, 0.75);
+
+  z-index: 2;
+}
+
+
+
+.glass:hover {
+  box-shadow:
+    14px 18px 26px rgba(0, 0, 0, 0.4),
+    5px 6px 10px rgba(0, 0, 0, 0.3);
+}

@@ -11,6 +11,12 @@ const skillSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: ["Frontend", "Backend", "Database", "Tools"]
+    },
+    level: {
+      type: Number,
+      required: true,
+      min: 0,
+      max: 100
     }
   },
   { timestamps: true }
