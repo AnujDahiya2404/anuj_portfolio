@@ -1,7 +1,5 @@
 import React from "react";
 
-// Icons: Thinner strokes for a more elegant feel
-// Inactive: 1.2px | Active: 2.5px
 const sections = [
   { 
     id: "home", 
@@ -39,6 +37,16 @@ const sections = [
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth={isActive ? 2.5 : 1.2} strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
         <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+      </svg>
+    ) 
+  },
+  { 
+    // ✅ MOVED HERE: After Education
+    id: "activity", 
+    label: "Activity", 
+    renderIcon: (isActive) => (
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth={isActive ? 2.5 : 1.2} strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
       </svg>
     ) 
   },
@@ -84,7 +92,6 @@ const Navbar = ({ activeSection }) => {
     >
       {sections.map((s) => {
         const isActive = activeSection === s.id;
-        
         return (
           <button
             key={s.id}
