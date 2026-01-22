@@ -71,13 +71,13 @@ const Navbar = ({ activeSection }) => {
         top: "50%",
         transform: "translateY(-50%)",
         height: "auto",      
-        padding: "20px 0",   // Tighter vertical padding
+        padding: "20px 0",
         width: "70px",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        gap: "16px",         // Reduced gap between icons
+        gap: "16px",
         borderRadius: "20px",
         zIndex: 10
       }}

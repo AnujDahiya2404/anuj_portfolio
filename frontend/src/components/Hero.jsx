@@ -23,13 +23,13 @@ const Hero = () => {
         padding: "40px"
       }}
     >
-      {/* LOGO / PNG IMAGE - Smaller Size */}
+      {/* LOGO */}
       <div style={{ marginBottom: "24px" }}>
         <img
           src={profilePic}
           alt="Profile"
           style={{
-            width: "150px",   // ✅ Reduced from 200px to 150px
+            width: "150px",
             height: "auto",
             objectFit: "contain",
             filter: "drop-shadow(0 10px 15px rgba(0,0,0,0.3))"
@@ -37,7 +37,7 @@ const Hero = () => {
         />
       </div>
 
-      {/* NAME */}
+      {/* NAME (Static) */}
       <h1 
         style={{ 
           fontSize: "64px",
@@ -63,6 +63,13 @@ const Hero = () => {
       >
         {profile.role}
       </h2>
+
+      {/* COLLEGE */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "16px" }}>
+        <span style={{ fontSize: "24px", fontWeight: "700", color: "black", opacity: 0.8 }}>
+          M.Tech in Information Technology, Netaji Subhas University of Technology
+        </span>
+      </div>
 
       {/* BIO */}
       <p

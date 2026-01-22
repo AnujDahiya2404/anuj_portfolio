@@ -15,7 +15,7 @@ const educationData = [
     degree: "Bachelor in Technology (B.Tech)",
     field: "Computer Science & Engineering",
     school: "Kurukshetra University, Kurukshetra",
-    year: "2021 - 2025",
+    year: "Completed 2025",
     grade: "7.55 CGPA",
     isCurrent: false,
   },
@@ -73,10 +73,6 @@ const Education = () => {
           paddingLeft: "20px"
         }}
       >
-        {/* CHANGED: Removed gap: "40px" from here. 
-           We now handle spacing via paddingBottom on individual items 
-           so the line can bridge the gap perfectly.
-        */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           {educationData.map((edu, index) => {
             
@@ -88,19 +84,18 @@ const Education = () => {
                 style={{
                   display: "flex",
                   gap: "32px",
-                  position: "relative", // Needed for the absolute line inside
-                  paddingBottom: isLast ? "0" : "40px" // Spacing is now here
+                  position: "relative",
+                  paddingBottom: isLast ? "0" : "40px"
                 }}
               >
                 {/* --- CONNECTING LINE --- */}
-                {/* Only render line if it's NOT the last item */}
                 {!isLast && (
                   <div
                     style={{
                       position: "absolute",
-                      left: "9px",  // Center of the 22px bullet (11px - 2px width = 9px)
-                      top: "17px",  // Center of bullet (6px margin + 11px radius)
-                      bottom: "-17px", // Extends down to meet the next bullet's center
+                      left: "9px", 
+                      top: "17px",
+                      bottom: "-17px", 
                       width: "4px",
                       background: "black",
                       zIndex: 0
@@ -114,11 +109,16 @@ const Education = () => {
                     width: "22px",
                     height: "22px",
                     borderRadius: "50%",
+                    
+                    // ✅ REVERTED: Standard Black Border for all
                     border: "3px solid black",
+                    
+                    // ✅ REVERTED: Hollow (White) if current, Filled (Black) if past
                     background: edu.isCurrent ? "white" : "black",
+                    
                     flexShrink: 0,
-                    marginTop: "6px", // Pushes circle down slightly to align with text
-                    zIndex: 1 // Sits on top of the line
+                    marginTop: "6px",
+                    zIndex: 1
                   }}
                 />
 

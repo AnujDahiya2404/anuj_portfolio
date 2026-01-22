@@ -74,7 +74,6 @@ p {
   color: #0e0e0e;
 
   border: 1.5px solid rgba(0, 0, 0, 0.25);
-
   background:
     linear-gradient(90deg, var(--accent-color), var(--accent-color)),
     rgba(255, 255, 255, 0.08);
@@ -97,7 +96,6 @@ p {
 .glass-button:hover {
   background-size: 110% 100%, 100% 100%;
   border-color: var(--accent-color);
-  
   transform: scale(1.1);
   color: #ffffff;
 }
@@ -154,11 +152,16 @@ p {
   
   white-space: nowrap;
   color: #0e0e0e; /* Ensures text remains dark and readable */
-  transition: transform 0.25s ease;
+  transition: 
+    transform 0.25s ease,
+    color 0.25s ease,
+    background-color 0.25s ease;
 }
 
 .tech-pill:hover{
   transform: scale(1.1);
+  background-color: #000000;
+  color: #fff;
 }
 
 /* Carousel Dots */
