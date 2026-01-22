@@ -1,12 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import skillRoutes from "./routes/skillRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 
 dotenv.config();
 connectDB();
 
 const app = express();
 app.use(express.json());
+app.use("/api/profile", profileRoutes);
+app.use("/api/skills", skillRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.get("/", (req, res) => {
   res.send("Portfolio backend running 🚀");
