@@ -1,4 +1,8 @@
-const BASE_URL = "http://localhost:5000/api";
+const API_URL = window.location.hostname === "localhost"
+  ? "http://localhost:5000/api" 
+  : "https://anuj-portfolio-api-nzue.onrender.com/"; // 👈 PASTE YOUR RENDER URL HERE
+
+// ... rest of your code
 
 // --- PROFILE ---
 export const getProfile = async () => {
