@@ -32,7 +32,31 @@ const Projects = () => {
         flexDirection: "column"
       }}
     >
-      {/* NEW CENTERED HEADING STYLE */}
+      {/* INTERNAL CSS TO HANDLE MOBILE LAYOUT SWITCH */}
+      <style>{`
+        /* Default: Mobile arrows hidden */
+        .mobile-controls { display: none; }
+        
+        /* Mobile View (Max 768px) */
+        @media (max-width: 768px) {
+          /* Hide Desktop Side Arrows */
+          .desktop-arrow { display: none !important; }
+          
+          /* Show Mobile Bottom Arrows */
+          .mobile-controls { 
+            display: flex !important; 
+            justify-content: center; 
+            gap: 24px; 
+            margin-top: 20px; 
+            margin-bottom: 20px;
+          }
+          
+          /* Override the inline 'space-between' to center the card on mobile */
+          .projects-row { justify-content: center !important; }
+        }
+      `}</style>
+
+      {/* HEADING */}
       <h2
         style={{
           fontSize: "48px",
@@ -55,40 +79,48 @@ const Projects = () => {
           gap: "20px"
         }}
       >
+        {/* CARD ROW (Desktop: Arrows on sides | Mobile: Card only) */}
         <div
+          className="projects-row" // Added class for mobile override
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            justifyContent: "space-between", // Desktop default
             gap: "24px",
             width: "100%",
             height: "100%"
           }}
         >
-          {/* LEFT ARROW */}
+          {/* LEFT ARROW (Desktop Only) */}
           <button
             onClick={prevProject}
-            className="glass arrow-btn"
+            className="glass arrow-btn desktop-arrow"
             title="Previous Project"
           >
             ◀
           </button>
 
-          {/* PROJECT CARD COMPONENT */}
+          {/* PROJECT CARD */}
           <ProjectCard
             key={currentIndex}
             project={projects[currentIndex]}
             direction={direction}
           />
 
-          {/* RIGHT ARROW */}
+          {/* RIGHT ARROW (Desktop Only) */}
           <button
             onClick={nextProject}
-            className="glass arrow-btn"
+            className="glass arrow-btn desktop-arrow"
             title="Next Project"
           >
             ▶
           </button>
+        </div>
+
+        {/* MOBILE CONTROLS (Bottom Arrows - Visible only on Mobile) */}
+        <div className="mobile-controls">
+          <button onClick={prevProject} className="glass arrow-btn">◀</button>
+          <button onClick={nextProject} className="glass arrow-btn">▶</button>
         </div>
 
         {/* DOT INDICATORS */}

@@ -18,3 +18,179 @@
   transform: translateY(-3px);
   box-shadow: 6px 6px 10px rgba(14, 14, 14, 0.85);
 }
+
+
+/* ... (Your existing glass styles stay here) ... */
+
+/* =========================================
+   RESPONSIVE LAYOUT SYSTEM
+   ========================================= */
+
+/* --- 1. APP LAYOUT CONTAINER --- */
+/* Replaces the inline style in App.jsx */
+.app-container {
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* --- 2. MAIN CONTENT AREA --- */
+/* Handles the scrollable area and margin for sidebar */
+.main-content {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  padding: 32px;
+  
+  /* DESKTOP DEFAULT: Push content right to accommodate sidebar */
+  margin-left: 100px; 
+}
+
+/* --- 3. NAVBAR CONTAINER --- */
+/* Replaces the inline style in Navbar.jsx */
+.navbar-container {
+  position: fixed;
+  left: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: auto;
+  padding: 20px 0;
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  border-radius: 20px;
+  z-index: 100; /* Ensure it stays on top */
+}
+
+/* --- 4. DASHBOARD LAYOUT --- */
+/* Replaces inline style in Dashboard.jsx */
+.dashboard-container {
+  min-height: 100vh;
+  padding: 40px;
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.dashboard-sidebar {
+  width: 250px;
+  position: sticky;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* =========================================
+   MOBILE OVERRIDES (Max Width 768px)
+   ========================================= */
+@media (max-width: 768px) {
+  
+  /* 1. TIGHTER MARGINS & PADDING */
+  .main-content {
+    margin-left: 0;
+    padding: 16px; /* Reduced from 20px */
+    padding-bottom: 120px; /* Space for bottom navbar */
+  }
+
+  /* 2. NAVBAR: STICK TO BOTTOM */
+  .navbar-container {
+    top: auto !important; /* Force override inline styles */
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    
+    width: 90%;
+    height: auto;
+    flex-direction: row; /* Horizontal */
+    padding: 8px 12px;
+    justify-content: space-between; /* Spread icons evenly */
+    border-radius: 50px;
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+
+  /* 3. SMALLER TEXT (Fixing "Way too big") */
+  h1 { font-size: 32px !important; line-height: 1.2; }
+  h2 { font-size: 24px !important; margin-bottom: 16px !important; }
+  h3 { font-size: 20px !important; }
+  p, span, div { font-size: 14px !important; }
+  
+  /* Hero specific text adjustments */
+  #home h1 { font-size: 36px !important; }
+  #home h2 { font-size: 20px !important; opacity: 0.8; }
+  #home p { font-size: 14px !important; line-height: 1.6; }
+
+  /* 4. CAROUSEL & PROJECTS FIXES */
+  /* Forces horizontal scroll instead of squishing */
+  #projects {
+    padding: 10px !important;
+    overflow-x: hidden; /* Prevent page scroll */
+  }
+  
+  /* If you are using a grid/flex for projects, this stacks them */
+  .project-container, .skills-container { 
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Fix Carousel Images */
+  .project-img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+  }
+}
+
+/* Add to src/glass.css */
+
+.carousel-container {
+  display: flex;
+  overflow-x: auto;      /* Enable horizontal scrolling */
+  scroll-snap-type: x mandatory; /* Snap to cards */
+  gap: 20px;
+  padding-bottom: 20px;
+  width: 100%;
+  -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+}
+
+/* Hide scrollbar for clean look */
+.carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+.project-card {
+  min-width: 85vw; /* On mobile, card takes 85% of screen width */
+  scroll-snap-align: center; /* Center the card when scrolling stops */
+}
+
+@media (min-width: 769px) {
+  .project-card {
+    min-width: 300px; /* Reset for desktop */
+  }
+}
+
+/* ... existing code ... */
+
+/* ✅ FIX: Navbar Hover Logic */
+
+/* DESKTOP: Keep it vertically centered (-50%) but lift it up (-5px) */
+.navbar-container:hover {
+  transform: translateY(calc(-50% - 2px)) !important; 
+  box-shadow: 6px 6px 10px rgba(14, 14, 14, 0.85) !important;
+}
+
+/* MOBILE: Keep it horizontally centered (-50% X) but lift it up (-5px Y) */
+@media (max-width: 768px) {
+  .navbar-container:hover {
+    transform: translate(-50%, -2px) !important;
+  }
+}
+

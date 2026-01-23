@@ -28,6 +28,14 @@ const Dashboard = () => {
   const [newSkill, setNewSkill] = useState({ name: "", category: "", level: 80, color: "#000000" }); 
   const [newEdu, setNewEdu] = useState({ degree: "", branch: "", school: "", year: "", grade: "", description: "" });
 
+  // ✅ NEW: Dynamic Document Title for Admin Panel
+  useEffect(() => {
+    document.title = "Admin Panel"; // Change title when mounting
+    return () => {
+      document.title = "Anuj Dahiya"; // Reset title when unmounting
+    };
+  }, []);
+
   useEffect(() => {
     if (isAuthenticated) loadAllData();
   }, [isAuthenticated]);
