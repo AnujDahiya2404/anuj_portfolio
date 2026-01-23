@@ -8,9 +8,9 @@ const skillSchema = new mongoose.Schema(
       trim: true
     },
     category: {
-      type: String,
-      required: true,
-      enum: ["Frontend", "Backend", "Database", "Tools"]
+      type: String, 
+      required: true, 
+      // ❌ REMOVED the 'enum' array so you can type whatever you want!
     },
     level: {
       type: Number,
@@ -19,9 +19,9 @@ const skillSchema = new mongoose.Schema(
       max: 100
     },
     color: {
-    type: String, // hex or rgb
-    required: true
-  }
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 );

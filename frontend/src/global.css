@@ -6,29 +6,20 @@
 }
 
 :root {
-  --accent-color: #4f8cff; /* change later if you want */
+  --accent-color: #4f8cff;
 }
 
-.linkedin {
-  --accent-color: #0a66c2;
-}
-.email{
-  --accent-color: #EA4335;
-}
+.linkedin { --accent-color: #0a66c2; }
+.email { --accent-color: #EA4335; }
+.github { --accent-color: #181717; }
+.live { --accent-color: var(--accent-color); }
 
-.github {
-  --accent-color: #181717;
-}
-
-.live {
-  --accent-color: var(--global-accent);
-}
-
+/* ===== CORE LAYOUT ===== */
 html,
 body {
-  height: 100%;
+  /* ✅ REMOVED 'overflow: hidden' so Dashboard can scroll! */
+  min-height: 100%; 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  overflow: hidden; /* IMPORTANT: prevent body scroll */
 }
 
 /* ===== FIXED LIGHT CODING BACKGROUND ===== */
@@ -38,41 +29,25 @@ body {
   background-position: center;
   background-attachment: fixed;
   background-repeat: no-repeat;
-}
-
-body {
   color: #0e0e0e;
 }
 
-h1, h2, h3 {
-  letter-spacing: -0.02em;
-}
+h1, h2, h3 { letter-spacing: -0.02em; }
+h1 { font-weight: 700; }
+h2 { font-weight: 600; }
+p { line-height: 1.7; }
 
-h1 {
-  font-weight: 700;
-}
-
-h2 {
-  font-weight: 600;
-}
-
-p {
-  line-height: 1.7;
-}
-
+/* ===== GLASS BUTTON ===== */
 .glass-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   padding: 12px 26px;
   border-radius: 12px;
-
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
   color: #0e0e0e;
-
   border: 1.5px solid rgba(0, 0, 0, 0.25);
   background:
     linear-gradient(90deg, var(--accent-color), var(--accent-color)),
@@ -80,11 +55,8 @@ p {
   background-size: 0% 100%, 100% 100%;
   background-repeat: no-repeat;
   background-position: left center, center;
-
   backdrop-filter: blur(6px);
-
   cursor: pointer;
-
   transition:
     background-size 0.25s ease,
     border-color 0.25s ease,
@@ -100,10 +72,9 @@ p {
   color: #ffffff;
 }
 
-.glass-button:active {
-  transform: scale(0.9);
-}
+.glass-button:active { transform: scale(0.9); }
 
+/* ===== ANIMATIONS ===== */
 .fade-section {
   opacity: 0;
   transform: translateY(12px);
@@ -133,25 +104,17 @@ p {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.arrow-btn:active {
-  transform: scale(0.95);
-}
+.arrow-btn:active { transform: scale(0.95); }
 
-/* Tech Stack Pills */
-/* Tech Stack Pills */
+/* ===== TECH PILLS ===== */
 .tech-pill {
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 20px;
-  
-  /* CHANGED: Matches SkillBar unhovered state (dark grey transparent) */
   background-color: rgba(0, 0, 0, 0.15); 
-  
-  /* Optional: Darken border slightly to match the darker theme */
   border: 1px solid rgba(0, 0, 0, 0.1); 
-  
   white-space: nowrap;
-  color: #0e0e0e; /* Ensures text remains dark and readable */
+  color: #0e0e0e; 
   transition: 
     transform 0.25s ease,
     color 0.25s ease,
@@ -164,7 +127,7 @@ p {
   color: #fff;
 }
 
-/* Carousel Dots */
+/* ===== CAROUSEL & PROJECT ===== */
 .carousel-dot {
   width: 8px;
   height: 8px;
@@ -178,54 +141,39 @@ p {
   transform: scale(1.2);
 }
 
-/* Project Image Hover Effect */
 .project-img {
   transition: transform 0.25s ease;
 }
 
-.project-img:hover {
-  transform: scale(1.02); /* Slight zoom */
-}
+.project-img:hover { transform: scale(1.02); }
 
-/* --- PROJECT TRANSITIONS --- */
-
-
-/* --- PROJECT TRANSITIONS --- */
-
-/* 1. Next Button Click: Slide in from Right */
-.slide-from-right {
-  /* Changed from 0.4s cubic-bezier to 0.25s ease */
-  animation: slideInRight 0.25s ease forwards;
-}
-
+.slide-from-right { animation: slideInRight 0.25s ease forwards; }
 @keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(40px); /* Reduced distance slightly for the faster time */
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-    filter: blur(0);
-  }
+  from { opacity: 0; transform: translateX(40px); filter: blur(4px); }
+  to { opacity: 1; transform: translateX(0); filter: blur(0); }
 }
 
-/* 2. Prev Button Click: Slide in from Left */
-.slide-from-left {
-  /* Changed from 0.4s cubic-bezier to 0.25s ease */
-  animation: slideInLeft 0.25s ease forwards;
-}
-
+.slide-from-left { animation: slideInLeft 0.25s ease forwards; }
 @keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-40px);
-    filter: blur(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-    filter: blur(0);
-  }
+  from { opacity: 0; transform: translateX(-40px); filter: blur(4px); }
+  to { opacity: 1; transform: translateX(0); filter: blur(0); }
 }
+
+
+/* ... existing css ... */
+/* Add this to src/global.css */
+.color-input-reset {
+  -webkit-appearance: none;
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.color-input-reset::-webkit-color-swatch-wrapper { padding: 0; }
+.color-input-reset::-webkit-color-swatch { border: none; border-radius: 8px; }
+.color-input-reset::-moz-color-swatch { border: none; border-radius: 8px; }

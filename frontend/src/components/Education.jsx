@@ -1,45 +1,41 @@
-import React from "react";
-
-const educationData = [
-  {
-    id: 1,
-    degree: "Master in Technology (M.Tech)",
-    field: "Information Technology",
-    school: "Netaji Subhas University of Technology",
-    year: "2025 - Present",
-    grade: "9.0 CGPA",
-    isCurrent: true,
-  },
-  {
-    id: 2,
-    degree: "Bachelor in Technology (B.Tech)",
-    field: "Computer Science & Engineering",
-    school: "Kurukshetra University, Kurukshetra",
-    year: "Completed 2025",
-    grade: "7.55 CGPA",
-    isCurrent: false,
-  },
-  {
-    id: 3,
-    degree: "Class XII",
-    field: "Non-Medical (Science)",
-    school: "CBSE Board",
-    year: "Completed",
-    grade: "76.40%",
-    isCurrent: false,
-  },
-  {
-    id: 4,
-    degree: "Class X",
-    field: "Secondary Education",
-    school: "CBSE Board",
-    year: "Completed",
-    grade: "93.60%",
-    isCurrent: false,
-  }
-];
+import React, { useEffect, useState } from "react";
+import { getEducation } from "../services/api";
 
 const Education = () => {
+  const [education, setEducation] = useState([]);
+
+  useEffect(() => {
+    getEducation().then((data) => {
+      if (!data) return;
+
+      // --- SORTING LOGIC ---
+      const sortedData = [...data].sort((a, b) => {
+        // Helper function to extract a sortable number from the year string
+        const getYearValue = (yearStr) => {
+          if (!yearStr) return 0;
+          const str = yearStr.toLowerCase();
+          
+          // 1. If it contains "present", it's the latest (give it a huge number)
+          if (str.includes("present")) return 9999;
+          
+          // 2. Extract the first 4-digit year found (e.g., "2023" from "2021-2023")
+          const match = str.match(/(\d{4})/);
+          return match ? parseInt(match[0]) : 0;
+        };
+
+        const yearA = getYearValue(a.year);
+        const yearB = getYearValue(b.year);
+
+        // Sort Descending (Highest year first)
+        return yearB - yearA;
+      });
+
+      setEducation(sortedData);
+    });
+  }, []);
+
+  if (!education.length) return null;
+
   return (
     <div
       style={{
@@ -74,13 +70,16 @@ const Education = () => {
         }}
       >
         <div style={{ display: "flex", flexDirection: "column" }}>
-          {educationData.map((edu, index) => {
+          {education.map((edu, index) => {
             
-            const isLast = index === educationData.length - 1;
+            const isLast = index === education.length - 1;
+            
+            // Logic: If year contains "Present", treat as current (Empty Circle)
+            const isCurrent = edu.year && edu.year.toLowerCase().includes("present");
 
             return (
               <div
-                key={edu.id}
+                key={edu._id || index}
                 style={{
                   display: "flex",
                   gap: "32px",
@@ -109,13 +108,8 @@ const Education = () => {
                     width: "22px",
                     height: "22px",
                     borderRadius: "50%",
-                    
-                    // ✅ REVERTED: Standard Black Border for all
                     border: "3px solid black",
-                    
-                    // ✅ REVERTED: Hollow (White) if current, Filled (Black) if past
-                    background: edu.isCurrent ? "white" : "black",
-                    
+                    background: isCurrent ? "white" : "black",
                     flexShrink: 0,
                     marginTop: "6px",
                     zIndex: 1
@@ -149,19 +143,27 @@ const Education = () => {
                   </h3>
 
                   <p style={{ margin: 0, fontSize: "16px", opacity: 0.8, color: "black" }}>
-                    {edu.field} • {edu.school}
+                    {edu.branch} • {edu.school}
                   </p>
 
-                  <div
-                    style={{
-                      marginTop: "8px",
-                      fontSize: "15px",
-                      fontWeight: "600",
-                      color: "black"
-                    }}
-                  >
-                    Grade: {edu.grade}
-                  </div>
+                  {edu.grade && (
+                    <div
+                      style={{
+                        marginTop: "8px",
+                        fontSize: "15px",
+                        fontWeight: "600",
+                        color: "black"
+                      }}
+                    >
+                      Grade: {edu.grade}
+                    </div>
+                  )}
+                  
+                  {edu.description && (
+                    <p style={{ marginTop: "4px", fontSize: "14px", opacity: 0.7 }}>
+                      {edu.description}
+                    </p>
+                  )}
                 </div>
               </div>
             );

@@ -37,7 +37,7 @@ const Hero = () => {
         />
       </div>
 
-      {/* NAME (Static) */}
+      {/* NAME */}
       <h1 
         style={{ 
           fontSize: "64px",
@@ -50,7 +50,7 @@ const Hero = () => {
         {profile.name}
       </h1>
 
-      {/* ROLE */}
+      {/* MAIN ROLE (Headline) */}
       <h2
         style={{
           fontSize: "32px",
@@ -64,10 +64,10 @@ const Hero = () => {
         {profile.role}
       </h2>
 
-      {/* COLLEGE */}
+      {/* ✅ UPDATED: CURRENT ROLE & ORG */}
       <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "16px" }}>
         <span style={{ fontSize: "24px", fontWeight: "700", color: "black", opacity: 0.8 }}>
-          M.Tech in Information Technology, Netaji Subhas University of Technology
+          {profile.currentRole}<br></br>{profile.currentOrg}
         </span>
       </div>
 

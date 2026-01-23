@@ -10,6 +10,7 @@ const Contact = () => {
 
   if (!profile) return null;
 
+  // Destructure socialLinks with a default empty object to prevent crashes
   const { socialLinks = {} } = profile;
 
   return (
@@ -42,7 +43,7 @@ const Contact = () => {
           width: "100%"
         }}
       >
-        {/* 1. EMAIL */}
+        {/* 1. EMAIL (Dynamic) */}
         {socialLinks.email && (
           <a
             href={`mailto:${socialLinks.email}`}
@@ -56,7 +57,7 @@ const Contact = () => {
           </a>
         )}
 
-        {/* 2. GITHUB */}
+        {/* 2. GITHUB (Dynamic) */}
         {socialLinks.github && (
           <a
             href={socialLinks.github}
@@ -71,7 +72,7 @@ const Contact = () => {
           </a>
         )}
 
-        {/* 3. LINKEDIN */}
+        {/* 3. LINKEDIN (Dynamic) */}
         {socialLinks.linkedin && (
           <a
             href={socialLinks.linkedin}
@@ -87,7 +88,7 @@ const Contact = () => {
         )}
       </div>
       
-      {/* Copyright/Footer */}
+      {/* Dynamic Footer with Name and Year */}
       <div style={{ marginTop: "60px", opacity: 0.5, fontSize: "14px" }}>
         © {new Date().getFullYear()} {profile.name}. All rights reserved.
       </div>

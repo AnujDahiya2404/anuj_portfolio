@@ -8,8 +8,15 @@ const profileSchema = new mongoose.Schema(
       trim: true
     },
     role: {
-      type: String,
+      type: String, // This is your main headline (e.g. "Full Stack Developer")
       required: true
+    },
+    // ✅ ADDED NEW FIELDS HERE
+    currentRole: {
+      type: String // e.g. "Software Engineer Intern"
+    },
+    currentOrg: {
+      type: String // e.g. "Google" or "Freelance"
     },
     bio: {
       type: String,
@@ -21,7 +28,9 @@ const profileSchema = new mongoose.Schema(
     socialLinks: {
       github: String,
       linkedin: String,
-      email: String
+      email: String,
+      leetcode: String,
+      codeforces: String
     }
   },
   { timestamps: true }
