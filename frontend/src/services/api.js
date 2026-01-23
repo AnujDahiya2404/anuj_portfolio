@@ -1,6 +1,6 @@
 const BASE_URL = window.location.hostname === "localhost"
   ? "http://localhost:5000/api" 
-  : "https://anuj-portfolio-api-nzue.onrender.com/"; // 👈 PASTE YOUR RENDER URL HERE
+  : "https://anuj-portfolio-api-nzue.onrender.com/api"; // ✅ Fixed: Added /api and removed trailing slash
 
 // ... rest of your code
 
