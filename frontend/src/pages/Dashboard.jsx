@@ -25,15 +25,15 @@ const Dashboard = () => {
 
   // --- FORM STATE ---
   const [newProject, setNewProject] = useState({ title: "", description: "", techStack: "", githubLink: "", liveLink: "" });
-  const [newSkill, setNewSkill] = useState({ name: "", category: "", level: 80, color: "#000000" }); 
+  
+  // ✅ UPDATED STATE: Added order and categoryOrder
+  const [newSkill, setNewSkill] = useState({ name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 }); 
+  
   const [newEdu, setNewEdu] = useState({ degree: "", branch: "", school: "", year: "", grade: "", description: "" });
 
-  // ✅ NEW: Dynamic Document Title for Admin Panel
   useEffect(() => {
-    document.title = "Admin Panel"; // Change title when mounting
-    return () => {
-      document.title = "Anuj Dahiya"; // Reset title when unmounting
-    };
+    document.title = "Admin Panel"; 
+    return () => { document.title = "Anuj Dahiya"; };
   }, []);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const Dashboard = () => {
   const handleLogin = (e) => { e.preventDefault(); if (password === "anuj123") setIsAuthenticated(true); else alert("Wrong Password!"); };
   const handleProfileUpdate = async (e) => { e.preventDefault(); await updateProfile(profile); alert("Updated!"); };
 
-  // ... (Keep all your existing Education/Project/Skill handlers exactly as they were) ...
+  // --- HANDLERS ---
   const handleEduSubmit = async (e) => { e.preventDefault(); if (editingEduId) { await updateEducation(editingEduId, newEdu); setEditingEduId(null); } else { await createEducation(newEdu); } setNewEdu({ degree: "", branch: "", school: "", year: "", grade: "", description: "" }); loadAllData(); };
   const startEditingEdu = (edu) => { setEditingEduId(edu._id); setNewEdu(edu); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); };
   const handleDeleteEdu = async (id) => { if(window.confirm("Delete?")) { await deleteEducation(id); loadAllData(); }};
@@ -61,7 +61,8 @@ const Dashboard = () => {
   const startEditingProject = (proj) => { setEditingProjId(proj._id); setNewProject({ ...proj, techStack: proj.techStack.join(", ") }); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); };
   const handleDeleteProject = async (id) => { if(window.confirm("Delete?")) { await deleteProject(id); loadAllData(); }};
 
-  const handleSkillSubmit = async (e) => { e.preventDefault(); if (editingSkillId) { await updateSkill(editingSkillId, newSkill); setEditingSkillId(null); } else { await createSkill(newSkill); } setNewSkill({ name: "", category: "", level: 80, color: "#000000" }); loadAllData(); };
+  // ✅ UPDATED SKILL HANDLERS
+  const handleSkillSubmit = async (e) => { e.preventDefault(); if (editingSkillId) { await updateSkill(editingSkillId, newSkill); setEditingSkillId(null); } else { await createSkill(newSkill); } setNewSkill({ name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 }); loadAllData(); };
   const startEditingSkill = (skill) => { setEditingSkillId(skill._id); setNewSkill(skill); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); };
   const handleDeleteSkill = async (id) => { if(window.confirm("Delete?")) { await deleteSkill(id); loadAllData(); }};
 
@@ -103,42 +104,24 @@ const Dashboard = () => {
       {/* CONTENT AREA */}
       <div className="glass" style={{ flex: 1, padding: "40px" }}>
         
-        {/* PROFILE TAB - UPDATED WITH NEW FIELDS */}
+        {/* PROFILE TAB */}
         {activeTab === "profile" && (
           <div>
             <h2 style={{ marginBottom: "20px" }}>Edit Profile</h2>
             <form onSubmit={handleProfileUpdate} style={{ display: "flex", flexDirection: "column", gap: "15px", maxWidth: "800px" }}>
-              
-              <label>Name</label>
-              <input style={inputStyle} value={profile.name || ""} onChange={e => setProfile({...profile, name: e.target.value})} />
-              
-              <label>Headline Role (e.g. Full Stack Dev)</label>
-              <input style={inputStyle} value={profile.role || ""} onChange={e => setProfile({...profile, role: e.target.value})} />
-
-              {/* ✅ NEW: CURRENT ROLE & ORG */}
+              <label>Name</label><input style={inputStyle} value={profile.name || ""} onChange={e => setProfile({...profile, name: e.target.value})} />
+              <label>Headline Role</label><input style={inputStyle} value={profile.role || ""} onChange={e => setProfile({...profile, role: e.target.value})} />
               <div style={{ display: "flex", gap: "15px" }}>
-                <div style={{ flex: 1 }}>
-                  <label>Current Role</label>
-                  <input style={{...inputStyle, width: "100%"}} placeholder="e.g. Software Engineer" value={profile.currentRole || ""} onChange={e => setProfile({...profile, currentRole: e.target.value})} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label>Current Organisation</label>
-                  <input style={{...inputStyle, width: "100%"}} placeholder="e.g. Google" value={profile.currentOrg || ""} onChange={e => setProfile({...profile, currentOrg: e.target.value})} />
-                </div>
+                <div style={{ flex: 1 }}><label>Current Role</label><input style={{...inputStyle, width: "100%"}} value={profile.currentRole || ""} onChange={e => setProfile({...profile, currentRole: e.target.value})} /></div>
+                <div style={{ flex: 1 }}><label>Current Organisation</label><input style={{...inputStyle, width: "100%"}} value={profile.currentOrg || ""} onChange={e => setProfile({...profile, currentOrg: e.target.value})} /></div>
               </div>
-
-              <label>Bio</label>
-              <textarea style={{...inputStyle, height: "150px"}} value={profile.bio || ""} onChange={e => setProfile({...profile, bio: e.target.value})} />
-              
-              <label>Resume Link</label>
-              <input style={inputStyle} value={profile.resumeLink || ""} onChange={e => setProfile({...profile, resumeLink: e.target.value})} />
-              
+              <label>Bio</label><textarea style={{...inputStyle, height: "150px"}} value={profile.bio || ""} onChange={e => setProfile({...profile, bio: e.target.value})} />
+              <label>Resume Link</label><input style={inputStyle} value={profile.resumeLink || ""} onChange={e => setProfile({...profile, resumeLink: e.target.value})} />
               <h3 style={sectionDivider}>Social Links</h3>
-              <label>GitHub</label><input style={inputStyle} placeholder="GitHub URL" value={profile.socialLinks?.github || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, github: e.target.value}})} />
-              <label>LinkedIn</label><input style={inputStyle} placeholder="LinkedIn URL" value={profile.socialLinks?.linkedin || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, linkedin: e.target.value}})} />
-              <label>LeetCode</label><input style={inputStyle} placeholder="LeetCode URL" value={profile.socialLinks?.leetcode || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, leetcode: e.target.value}})} />
-              <label>Codeforces</label><input style={inputStyle} placeholder="Codeforces URL" value={profile.socialLinks?.codeforces || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, codeforces: e.target.value}})} />
-              
+              <label>GitHub</label><input style={inputStyle} value={profile.socialLinks?.github || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, github: e.target.value}})} />
+              <label>LinkedIn</label><input style={inputStyle} value={profile.socialLinks?.linkedin || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, linkedin: e.target.value}})} />
+              <label>LeetCode</label><input style={inputStyle} value={profile.socialLinks?.leetcode || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, leetcode: e.target.value}})} />
+              <label>Codeforces</label><input style={inputStyle} value={profile.socialLinks?.codeforces || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, codeforces: e.target.value}})} />
               <button type="submit" style={btnPrimary}>Save Profile</button>
             </form>
           </div>
@@ -212,7 +195,12 @@ const Dashboard = () => {
             <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "40px" }}>
               {skills.map(s => (
                 <div key={s._id} style={{ ...listItemStyle, borderRadius: "20px", padding: "8px 15px", display: "inline-flex", width: "auto" }}>
-                  <span style={{ marginRight: "10px" }}>{s.name} <small style={{opacity: 0.6}}>({s.level}%)</small></span>
+                  <span style={{ marginRight: "10px" }}>
+                    {/* Display Order in UI for reference */}
+                    <b style={{marginRight:"5px", color:"#555"}}>#{s.order || 0}</b>
+                    {s.name} 
+                    <small style={{opacity: 0.6, marginLeft:"5px"}}>({s.category})</small>
+                  </span>
                   <div style={{display:"flex", alignItems:"center", marginLeft:"auto", gap:"10px"}}>
                      <span onClick={() => startEditingSkill(s)} style={{ color: "#4f8cff", cursor: "pointer", display:"flex", alignItems:"center" }} title="Edit Skill">
                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
@@ -222,30 +210,48 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
+            
             <h3 style={sectionHeader}>{editingSkillId ? "Edit Skill" : "Add Skill"}</h3>
             <form onSubmit={handleSkillSubmit} style={{ display: "flex", gap: "15px", flexWrap: "wrap", alignItems: "flex-end" }}>
-              <div style={{ flex: 2, minWidth: "180px" }}>
+              
+              <div style={{ flex: 2, minWidth: "150px" }}>
                 <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Name</label>
                 <input style={inputStyle} placeholder="e.g. Docker" value={newSkill.name} onChange={e => setNewSkill({...newSkill, name: e.target.value})} required />
               </div>
-              <div style={{ flex: 1, minWidth: "140px" }}>
+              
+              <div style={{ flex: 1, minWidth: "120px" }}>
                  <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Category</label>
                  <input list="category-options" style={inputStyle} placeholder="Type or Select" value={newSkill.category} onChange={e => setNewSkill({...newSkill, category: e.target.value})} required />
                  <datalist id="category-options">
-                   <option value="Frontend" /><option value="Backend" /><option value="Database" /><option value="Tools" /><option value="DevOps" /><option value="Mobile" /><option value="AI/ML" />
+                   <option value="Languages" /><option value="Frontend" /><option value="Backend" /><option value="Database" /><option value="Tools" />
                  </datalist>
               </div>
-              <div style={{ width: "80px" }}>
+
+              {/* ✅ NEW: CATEGORY PRIORITY */}
+              <div style={{ width: "90px" }}>
+                <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Cat. Order</label>
+                <input type="number" style={inputStyle} placeholder="1, 2..." value={newSkill.categoryOrder || 0} onChange={e => setNewSkill({...newSkill, categoryOrder: Number(e.target.value)})} />
+              </div>
+
+              {/* ✅ NEW: SKILL PRIORITY */}
+              <div style={{ width: "70px" }}>
+                <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Order</label>
+                <input type="number" style={inputStyle} placeholder="1..." value={newSkill.order || 0} onChange={e => setNewSkill({...newSkill, order: Number(e.target.value)})} />
+              </div>
+
+              <div style={{ width: "70px" }}>
                 <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Level</label>
                 <input type="number" min="0" max="100" style={inputStyle} value={newSkill.level} onChange={e => setNewSkill({...newSkill, level: e.target.value})} required />
               </div>
-              <div style={{ width: "60px" }}>
+              
+              <div style={{ width: "50px" }}>
                  <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Color</label>
                  <input type="color" className="color-input-reset" value={newSkill.color} onChange={e => setNewSkill({...newSkill, color: e.target.value})} style={{ width: "100%", height: "42px", borderRadius: "8px", cursor: "pointer", boxShadow: "0 2px 5px rgba(0,0,0,0.1)" }} />
               </div>
+              
               <div style={{display:"flex", gap:"10px"}}>
                  <button type="submit" style={{...btnPrimary, marginTop: 0, border: "1px solid transparent"}}>{editingSkillId ? "Update" : "Add"}</button>
-                 {editingSkillId && <button type="button" onClick={() => { setEditingSkillId(null); setNewSkill({name:"", category:"", level:80, color:"#000000"}); }} style={{...btnCancel, marginTop:0, border: "1px solid transparent"}}>Cancel</button>}
+                 {editingSkillId && <button type="button" onClick={() => { setEditingSkillId(null); setNewSkill({name:"", category:"", level:80, color:"#000000", order:0, categoryOrder:0}); }} style={{...btnCancel, marginTop:0, border: "1px solid transparent"}}>Cancel</button>}
               </div>
             </form>
           </div>

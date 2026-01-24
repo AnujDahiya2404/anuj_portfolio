@@ -10,7 +10,6 @@ const skillSchema = new mongoose.Schema(
     category: {
       type: String, 
       required: true, 
-      // ❌ REMOVED the 'enum' array so you can type whatever you want!
     },
     level: {
       type: Number,
@@ -21,7 +20,10 @@ const skillSchema = new mongoose.Schema(
     color: {
       type: String,
       required: true
-    }
+    },
+    // ✅ NEW FIELDS FOR SORTING
+    order: { type: Number, default: 0 },         // e.g. 1 for Java, 2 for Python
+    categoryOrder: { type: Number, default: 0 }  // e.g. 1 for Languages, 2 for Frontend
   },
   { timestamps: true }
 );

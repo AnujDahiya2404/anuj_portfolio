@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getSkills } from "../services/api";
-import SkillBar from "./SkillBar";
+import SkillBar from "./SkillBar"; // Assuming you have this component
 
 const Skills = () => {
   const [skills, setSkills] = useState([]);
@@ -9,15 +9,26 @@ const Skills = () => {
     getSkills().then(setSkills);
   }, []);
 
+  // ✅ NEW LOGIC: Group while preserving category info
   const grouped = skills.reduce((acc, skill) => {
-    acc[skill.category] = acc[skill.category] || [];
-    acc[skill.category].push(skill);
+    const { category, categoryOrder } = skill;
+    if (!acc[category]) {
+      acc[category] = {
+        order: categoryOrder || 99, // Default to end if no order set
+        list: []
+      };
+    }
+    acc[category].list.push(skill);
     return acc;
   }, {});
 
+  // Sort categories based on the 'order' field we saved above
+  const sortedCategories = Object.entries(grouped).sort(
+    ([, a], [, b]) => a.order - b.order
+  );
+
   return (
     <div style={{ padding: "40px" }}>
-      {/* ✅ UPDATED HEADING STYLE */}
       <h2 
         style={{ 
           fontSize: "48px",
@@ -31,7 +42,7 @@ const Skills = () => {
         Skills
       </h2>
 
-      {Object.entries(grouped).map(([category, items]) => (
+      {sortedCategories.map(([category, { list }]) => (
         <div key={category} style={{ marginBottom: "28px" }}>
           <h3 style={{ marginBottom: "12px", opacity: 0.8 }}>
             {category}
@@ -44,7 +55,8 @@ const Skills = () => {
               gap: "12px"
             }}
           >
-          {items.map((skill) => (
+          {/* List is already sorted by backend, but we map it here */}
+          {list.map((skill) => (
             <SkillBar
               key={skill._id}
               name={skill.name}
