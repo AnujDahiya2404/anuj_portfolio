@@ -4,12 +4,12 @@ const BASE_URL = "https://anuj-portfolio-api-yqqt.onrender.com/api"; // ✅ Fixe
 
 // --- PROFILE ---
 export const getProfile = async () => {
-  const res = await fetch(`${BASE_URL}/profile`);
+  const res = await fetch(`${BASE_URL}/profiles`);
   return res.json();
 };
 
 export const updateProfile = async (data) => {
-  const res = await fetch(`${BASE_URL}/profile`, {
+  const res = await fetch(`${BASE_URL}/profiles`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -81,12 +81,12 @@ export const updateProject = async (id, data) => {
 
 // --- EDUCATION (New) ---
 export const getEducation = async () => {
-  const res = await fetch(`${BASE_URL}/education`);
+  const res = await fetch(`${BASE_URL}/educations`);
   return res.json();
 };
 
 export const createEducation = async (data) => {
-  const res = await fetch(`${BASE_URL}/education`, {
+  const res = await fetch(`${BASE_URL}/educations`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -95,14 +95,14 @@ export const createEducation = async (data) => {
 };
 
 export const deleteEducation = async (id) => {
-  const res = await fetch(`${BASE_URL}/education/${id}`, {
+  const res = await fetch(`${BASE_URL}/educations/${id}`, {
     method: "DELETE",
   });
   return res.json();
 };
 
 export const updateEducation = async (id, data) => {
-  const res = await fetch(`${BASE_URL}/education/${id}`, {
+  const res = await fetch(`${BASE_URL}/educations/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
