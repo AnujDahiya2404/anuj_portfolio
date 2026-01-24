@@ -1,4 +1,4 @@
-const BASE_URL = "https://anuj-portfolio-api-yqqt.onrender.com"; // ✅ Fixed: Added /api and removed trailing slash
+const BASE_URL = "https://anuj-portfolio-api-yqqt.onrender.com/api"; // ✅ Fixed: Added /api and removed trailing slash
 
 // ... rest of your code
 
