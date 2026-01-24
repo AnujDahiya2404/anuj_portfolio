@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { 
   getProfile, updateProfile, 
   getProjects, createProject, updateProject, deleteProject, 
@@ -11,6 +11,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
+  const [categoryMode, setCategoryMode] = useState(false); // Toggle for Category Manager
 
   // --- DATA STATE ---
   const [profile, setProfile] = useState({});
@@ -24,12 +25,15 @@ const Dashboard = () => {
   const [editingSkillId, setEditingSkillId] = useState(null);
 
   // --- FORM STATE ---
-  // ✅ 1. FIXED: Added 'order: 0' to the initial state
   const [newProject, setNewProject] = useState({ 
     title: "", description: "", techStack: "", githubLink: "", liveLink: "", image: "", order: 0 
   });
   
-  const [newSkill, setNewSkill] = useState({ name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 }); 
+  const [newSkill, setNewSkill] = useState({ 
+    name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 
+  }); 
+  const [isNewCategory, setIsNewCategory] = useState(false); // Toggle for "Create New Category" input
+
   const [newEdu, setNewEdu] = useState({ degree: "", branch: "", school: "", year: "", grade: "", description: "" });
 
   useEffect(() => {
@@ -50,6 +54,61 @@ const Dashboard = () => {
     } catch (error) { console.error(error); }
   };
 
+  // --- SMART SKILL HELPERS ---
+  // Extract unique categories and their current order
+  const distinctCategories = useMemo(() => {
+    const map = new Map();
+    skills.forEach(s => {
+      if (!map.has(s.category)) {
+        map.set(s.category, { name: s.category, order: s.categoryOrder });
+      }
+    });
+    return Array.from(map.values()).sort((a, b) => a.order - b.order);
+  }, [skills]);
+
+  // Handle Category Selection in Dropdown
+  const handleCategorySelect = (e) => {
+    const val = e.target.value;
+    if (val === "___NEW___") {
+      setIsNewCategory(true);
+      // Default to next available category rank
+      const nextCatOrder = distinctCategories.length > 0 
+        ? Math.max(...distinctCategories.map(c => c.order)) + 1 
+        : 1;
+      setNewSkill({ ...newSkill, category: "", categoryOrder: nextCatOrder, order: 1 });
+    } else {
+      setIsNewCategory(false);
+      // Find stats for existing category
+      const catStats = distinctCategories.find(c => c.name === val);
+      // Find next skill order in this category
+      const skillsInCat = skills.filter(s => s.category === val);
+      const nextSkillOrder = skillsInCat.length > 0 
+        ? Math.max(...skillsInCat.map(s => s.order)) + 1 
+        : 1;
+      
+      setNewSkill({ 
+        ...newSkill, 
+        category: val, 
+        categoryOrder: catStats?.order || 0,
+        order: nextSkillOrder
+      });
+    }
+  };
+
+  // Handle Bulk Category Reorder
+  const handleCategoryReorder = async (categoryName, newOrder) => {
+    // 1. Find all skills with this category
+    const skillsToUpdate = skills.filter(s => s.category === categoryName);
+    
+    // 2. Update them all (Optimistic UI update could be added here)
+    if(window.confirm(`Update rank of "${categoryName}" to ${newOrder}? This updates ${skillsToUpdate.length} skills.`)) {
+        try {
+            await Promise.all(skillsToUpdate.map(s => updateSkill(s._id, { ...s, categoryOrder: Number(newOrder) })));
+            loadAllData();
+        } catch(err) { alert("Error updating category order"); }
+    }
+  };
+
   const handleLogin = (e) => { e.preventDefault(); if (password === "anuj123") setIsAuthenticated(true); else alert("Wrong Password!"); };
   const handleProfileUpdate = async (e) => { e.preventDefault(); await updateProfile(profile); alert("Updated!"); };
 
@@ -62,34 +121,38 @@ const Dashboard = () => {
     e.preventDefault(); 
     const techStackArray = typeof newProject.techStack === 'string' ? newProject.techStack.split(",").map(t => t.trim()) : newProject.techStack; 
     const payload = { ...newProject, techStack: techStackArray }; 
-    
-    if (editingProjId) { 
-      await updateProject(editingProjId, payload); 
-      setEditingProjId(null); 
-    } else { 
-      await createProject(payload); 
-    } 
-    // ✅ 2. FIXED: Reset 'order' to 0 on submit
+    if (editingProjId) { await updateProject(editingProjId, payload); setEditingProjId(null); } else { await createProject(payload); } 
     setNewProject({ title: "", description: "", techStack: "", githubLink: "", liveLink: "", image: "", order: 0 }); 
     loadAllData(); 
   };
 
   const startEditingProject = (proj) => { 
     setEditingProjId(proj._id); 
-    // ✅ 3. FIXED: Load existing order from DB
-    setNewProject({ 
-      ...proj, 
-      techStack: proj.techStack.join(", "), 
-      image: proj.image || "",
-      order: proj.order || 0 
-    }); 
+    setNewProject({ ...proj, techStack: proj.techStack.join(", "), image: proj.image || "", order: proj.order || 0 }); 
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); 
   };
-
   const handleDeleteProject = async (id) => { if(window.confirm("Delete?")) { await deleteProject(id); loadAllData(); }};
 
-  const handleSkillSubmit = async (e) => { e.preventDefault(); if (editingSkillId) { await updateSkill(editingSkillId, newSkill); setEditingSkillId(null); } else { await createSkill(newSkill); } setNewSkill({ name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 }); loadAllData(); };
-  const startEditingSkill = (skill) => { setEditingSkillId(skill._id); setNewSkill(skill); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); };
+  const handleSkillSubmit = async (e) => { 
+      e.preventDefault(); 
+      if (editingSkillId) { 
+          await updateSkill(editingSkillId, newSkill); 
+          setEditingSkillId(null); 
+      } else { 
+          await createSkill(newSkill); 
+      } 
+      // Reset form but keep last category if creating multiples? No, reset all for safety.
+      setNewSkill({ name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 }); 
+      setIsNewCategory(false);
+      loadAllData(); 
+  };
+
+  const startEditingSkill = (skill) => { 
+      setEditingSkillId(skill._id); 
+      setNewSkill(skill); 
+      setIsNewCategory(false); // Usually editing keeps existing category
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); 
+  };
   const handleDeleteSkill = async (id) => { if(window.confirm("Delete?")) { await deleteSkill(id); loadAllData(); }};
 
 
@@ -144,6 +207,8 @@ const Dashboard = () => {
               <label>Bio</label><textarea style={{...inputStyle, height: "150px"}} value={profile.bio || ""} onChange={e => setProfile({...profile, bio: e.target.value})} />
               <label>Resume Link</label><input style={inputStyle} value={profile.resumeLink || ""} onChange={e => setProfile({...profile, resumeLink: e.target.value})} />
               <h3 style={sectionDivider}>Social Links</h3>
+              <label>Email</label>
+              <input style={inputStyle} value={profile.socialLinks?.email || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, email: e.target.value}})} placeholder="e.g. 2404anuj@gmail.com"/>
               <label>GitHub</label><input style={inputStyle} value={profile.socialLinks?.github || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, github: e.target.value}})} />
               <label>LinkedIn</label><input style={inputStyle} value={profile.socialLinks?.linkedin || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, linkedin: e.target.value}})} />
               <label>LeetCode</label><input style={inputStyle} value={profile.socialLinks?.leetcode || ""} onChange={e => setProfile({...profile, socialLinks: {...profile.socialLinks, leetcode: e.target.value}})} />
@@ -192,7 +257,6 @@ const Dashboard = () => {
               {projects.map(p => (
                 <div key={p._id} style={listItemStyle}>
                   <div>
-                    {/* Display Rank to verify it worked */}
                     <strong style={{ fontSize: "1.2rem", color: "#555" }}>#{p.order || 0}</strong>&nbsp;
                     <strong style={{ fontSize: "1.2rem" }}>{p.title}</strong><br/><small>{p.techStack.join(", ")}</small>
                   </div>
@@ -205,35 +269,19 @@ const Dashboard = () => {
             </div>
             <h3 style={sectionHeader}>{editingProjId ? "Edit Project" : "Add Project"}</h3>
             <form onSubmit={handleProjectSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "800px" }}>
-              
               <div style={{ display: "flex", gap: "15px" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Title</label>
                   <input style={inputStyle} placeholder="Title" value={newProject.title} onChange={e => setNewProject({...newProject, title: e.target.value})} required />
                 </div>
-                {/* ✅ 4. FIXED: Added the Rank Input here */}
                 <div style={{ width: "80px" }}>
                   <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Rank</label>
-                  <input 
-                    type="number" 
-                    style={inputStyle} 
-                    placeholder="1" 
-                    value={newProject.order} 
-                    onChange={(e) => setNewProject({...newProject, order: Number(e.target.value)})} 
-                  />
+                  <input type="number" style={inputStyle} placeholder="1" value={newProject.order} onChange={(e) => setNewProject({...newProject, order: Number(e.target.value)})} />
                 </div>
               </div>
-
               <textarea style={{...inputStyle, height: "100px"}} placeholder="Description" value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} required />
               <input style={inputStyle} placeholder="Tech Stack (comma separated)" value={newProject.techStack} onChange={e => setNewProject({...newProject, techStack: e.target.value})} required />
-              
-              <input 
-                style={inputStyle} 
-                placeholder="Image Path (e.g. /project-images/tennis.png)" 
-                value={newProject.image} 
-                onChange={(e) => setNewProject({...newProject, image: e.target.value})} 
-              />
-              
+              <input style={inputStyle} placeholder="Image Path" value={newProject.image} onChange={(e) => setNewProject({...newProject, image: e.target.value})} />
               <input style={inputStyle} placeholder="GitHub Link" value={newProject.githubLink} onChange={e => setNewProject({...newProject, githubLink: e.target.value})} />
               <input style={inputStyle} placeholder="Live Link" value={newProject.liveLink} onChange={e => setNewProject({...newProject, liveLink: e.target.value})} />
               <div style={{display:"flex", gap:"10px"}}>
@@ -244,29 +292,63 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* SKILLS TAB */}
+        {/* ---------------- SKILLS TAB (UPDATED) ---------------- */}
         {activeTab === "skills" && (
           <div>
-            <h2 style={{ marginBottom: "20px" }}>Manage Skills</h2>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "40px" }}>
-              {skills.map(s => (
-                <div key={s._id} style={{ ...listItemStyle, borderRadius: "20px", padding: "8px 15px", display: "inline-flex", width: "auto" }}>
-                  <span style={{ marginRight: "10px" }}>
-                    <b style={{marginRight:"5px", color:"#555"}}>#{s.order || 0}</b>
-                    {s.name} 
-                    <small style={{opacity: 0.6, marginLeft:"5px"}}>({s.category})</small>
-                  </span>
-                  <div style={{display:"flex", alignItems:"center", marginLeft:"auto", gap:"10px"}}>
-                     <span onClick={() => startEditingSkill(s)} style={{ color: "#4f8cff", cursor: "pointer", display:"flex", alignItems:"center" }} title="Edit Skill">
-                       <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
-                     </span>
-                     <span onClick={() => handleDeleteSkill(s._id)} style={{ color: "#ff4444", cursor: "pointer", fontWeight: "bold", fontSize: "1.2rem", lineHeight: "1" }} title="Delete Skill">×</span>
-                  </div>
-                </div>
-              ))}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <h2>Manage Skills</h2>
+                <button 
+                  onClick={() => setCategoryMode(!categoryMode)} 
+                  style={{ ...btnEdit, background: categoryMode ? "#333" : "#eee", color: categoryMode ? "white" : "#333" }}
+                >
+                    {categoryMode ? "Exit Category Manager" : "Manage Categories"}
+                </button>
             </div>
+
+            {/* VIEW 1: CATEGORY MANAGER (Rank Categories Only) */}
+            {categoryMode && (
+                <div style={{ marginBottom: "40px", padding: "20px", background: "rgba(255,255,255,0.4)", borderRadius: "12px" }}>
+                    <h3>Reorder Categories</h3>
+                    <p style={{fontSize:"13px", color:"#666", marginBottom:"15px"}}>Changing a rank here updates ALL skills in that category.</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                        {distinctCategories.map((cat) => (
+                            <div key={cat.name} style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                                <strong style={{ minWidth: "120px" }}>{cat.name}</strong>
+                                <input 
+                                    type="number" 
+                                    defaultValue={cat.order} 
+                                    style={{ ...inputStyle, width: "70px", padding: "8px" }}
+                                    onBlur={(e) => {
+                                        if(Number(e.target.value) !== cat.order) {
+                                            handleCategoryReorder(cat.name, e.target.value);
+                                        }
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* VIEW 2: SKILL LIST (Grouped by Category for Clarity) */}
+            {!categoryMode && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "40px" }}>
+                {skills.sort((a,b) => (a.categoryOrder - b.categoryOrder) || (a.order - b.order)).map(s => (
+                  <div key={s._id} style={{ ...listItemStyle, borderRadius: "20px", padding: "8px 15px", display: "inline-flex", width: "auto" }}>
+                    <span style={{ marginRight: "10px" }}>
+                      <b style={{marginRight:"5px", color:"#555"}}>#{s.order || 0}</b>
+                      {s.name} <small style={{opacity: 0.6, marginLeft:"5px"}}>({s.category})</small>
+                    </span>
+                    <div style={{display:"flex", alignItems:"center", marginLeft:"auto", gap:"10px"}}>
+                       <span onClick={() => startEditingSkill(s)} style={{ color: "#4f8cff", cursor: "pointer" }}>✎</span>
+                       <span onClick={() => handleDeleteSkill(s._id)} style={{ color: "#ff4444", cursor: "pointer", fontWeight: "bold" }}>×</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             
-            <h3 style={sectionHeader}>{editingSkillId ? "Edit Skill" : "Add Skill"}</h3>
+            <h3 style={sectionHeader}>{editingSkillId ? "Edit Skill" : "Add New Skill"}</h3>
             <form onSubmit={handleSkillSubmit} style={{ display: "flex", gap: "15px", flexWrap: "wrap", alignItems: "flex-end" }}>
               
               <div style={{ flex: 2, minWidth: "150px" }}>
@@ -274,22 +356,46 @@ const Dashboard = () => {
                 <input style={inputStyle} placeholder="e.g. Docker" value={newSkill.name} onChange={e => setNewSkill({...newSkill, name: e.target.value})} required />
               </div>
               
-              <div style={{ flex: 1, minWidth: "120px" }}>
+              {/* SMART CATEGORY SELECTOR */}
+              <div style={{ flex: 1, minWidth: "150px" }}>
                  <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Category</label>
-                 <input list="category-options" style={inputStyle} placeholder="Type or Select" value={newSkill.category} onChange={e => setNewSkill({...newSkill, category: e.target.value})} required />
-                 <datalist id="category-options">
-                   <option value="Languages" /><option value="Frontend" /><option value="Backend" /><option value="Database" /><option value="Tools" />
-                 </datalist>
+                 
+                 {!isNewCategory ? (
+                    <select 
+                        style={inputStyle} 
+                        value={newSkill.category} 
+                        onChange={handleCategorySelect}
+                        required={!isNewCategory}
+                    >
+                        <option value="">-- Select Category --</option>
+                        {distinctCategories.map(c => (
+                            <option key={c.name} value={c.name}>{c.name}</option>
+                        ))}
+                        <option value="___NEW___">+ Create New Category</option>
+                    </select>
+                 ) : (
+                    <div style={{ display: "flex", gap: "5px" }}>
+                        <input 
+                            style={inputStyle} 
+                            placeholder="New Category Name" 
+                            value={newSkill.category} 
+                            onChange={e => setNewSkill({...newSkill, category: e.target.value})} 
+                            autoFocus
+                        />
+                        <button type="button" onClick={() => setIsNewCategory(false)} style={btnCancel}>✖</button>
+                    </div>
+                 )}
               </div>
 
-              <div style={{ width: "90px" }}>
-                <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Cat. Order</label>
-                <input type="number" style={inputStyle} placeholder="1, 2..." value={newSkill.categoryOrder || 0} onChange={e => setNewSkill({...newSkill, categoryOrder: Number(e.target.value)})} />
+              {/* READ-ONLY / AUTO-FILLED ORDERS (Editable if needed) */}
+              <div style={{ width: "70px" }}>
+                <label style={{display:"block", marginBottom:"5px", fontSize:"12px", opacity: 0.5}}>Cat. Rank</label>
+                <input type="number" style={{...inputStyle, background: "#eee"}} value={newSkill.categoryOrder || 0} onChange={e => setNewSkill({...newSkill, categoryOrder: Number(e.target.value)})} />
               </div>
 
               <div style={{ width: "70px" }}>
-                <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Order</label>
-                <input type="number" style={inputStyle} placeholder="1..." value={newSkill.order || 0} onChange={e => setNewSkill({...newSkill, order: Number(e.target.value)})} />
+                <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Rank</label>
+                <input type="number" style={inputStyle} value={newSkill.order || 0} onChange={e => setNewSkill({...newSkill, order: Number(e.target.value)})} />
               </div>
 
               <div style={{ width: "70px" }}>
@@ -304,7 +410,7 @@ const Dashboard = () => {
               
               <div style={{display:"flex", gap:"10px"}}>
                  <button type="submit" style={{...btnPrimary, marginTop: 0, border: "1px solid transparent"}}>{editingSkillId ? "Update" : "Add"}</button>
-                 {editingSkillId && <button type="button" onClick={() => { setEditingSkillId(null); setNewSkill({name:"", category:"", level:80, color:"#000000", order:0, categoryOrder:0}); }} style={{...btnCancel, marginTop:0, border: "1px solid transparent"}}>Cancel</button>}
+                 {editingSkillId && <button type="button" onClick={() => { setEditingSkillId(null); setNewSkill({name:"", category:"", level:80, color:"#000000", order:0, categoryOrder:0}); setIsNewCategory(false); }} style={{...btnCancel, marginTop:0, border: "1px solid transparent"}}>Cancel</button>}
               </div>
             </form>
           </div>

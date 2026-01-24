@@ -3,14 +3,25 @@ import { getProfile } from "../services/api";
 
 const Contact = () => {
   const [profile, setProfile] = useState(null);
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     getProfile().then(setProfile);
   }, []);
 
+  const handleCopyEmail = (e) => {
+    e.preventDefault(); // Stop the default mail app from opening
+    if (profile?.socialLinks?.email) {
+      navigator.clipboard.writeText(profile.socialLinks.email);
+      setShowToast(true);
+      
+      // Hide toast after 3 seconds
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
   if (!profile) return null;
 
-  // Destructure socialLinks with a default empty object to prevent crashes
   const { socialLinks = {} } = profile;
 
   return (
@@ -22,9 +33,37 @@ const Contact = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        textAlign: "center"
+        textAlign: "center",
+        position: "relative" // Needed for absolute positioning of toast if you prefer containment
       }}
     >
+      {/* INTERNAL CSS FOR TOAST ANIMATION */}
+      <style>{`
+        .toast-popup {
+          position: fixed;
+          bottom: 40px;
+          left: 50%;
+          transform: translateX(-50%) translateY(100px);
+          background: rgba(30, 30, 30, 0.9);
+          color: white;
+          padding: 12px 24px;
+          border-radius: 50px;
+          font-size: 14px;
+          font-weight: 600;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+          opacity: 0;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          z-index: 9999;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .toast-popup.active {
+          transform: translateX(-50%) translateY(0);
+          opacity: 1;
+        }
+      `}</style>
+
       <h2 style={{ fontSize: "48px", marginBottom: "20px", fontWeight: "bold" }}>
         Get In Touch
       </h2>
@@ -43,21 +82,22 @@ const Contact = () => {
           width: "100%"
         }}
       >
-        {/* 1. EMAIL (Dynamic) */}
+        {/* 1. EMAIL (Click to Copy) */}
         {socialLinks.email && (
-          <a
-            href={`mailto:${socialLinks.email}`}
+          <button
+            onClick={handleCopyEmail}
             className="glass-button email"
+            title="Click to Copy Email"
           >
             <svg width="20" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: "8px" }}>
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
               <polyline points="22,6 12,13 2,6"></polyline>
             </svg>
-            <span>Email</span>
-          </a>
+            <span>{socialLinks.email}</span>
+          </button>
         )}
 
-        {/* 2. GITHUB (Dynamic) */}
+        {/* 2. GITHUB */}
         {socialLinks.github && (
           <a
             href={socialLinks.github}
@@ -72,7 +112,7 @@ const Contact = () => {
           </a>
         )}
 
-        {/* 3. LINKEDIN (Dynamic) */}
+        {/* 3. LINKEDIN */}
         {socialLinks.linkedin && (
           <a
             href={socialLinks.linkedin}
@@ -86,6 +126,14 @@ const Contact = () => {
             <span>LinkedIn</span>
           </a>
         )}
+      </div>
+
+      {/* TOAST NOTIFICATION */}
+      <div className={`toast-popup ${showToast ? "active" : ""}`}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>Email copied to clipboard!</span>
       </div>
       
       {/* Dynamic Footer with Name and Year */}
