@@ -1,5 +1,5 @@
 import express from "express";
-import Project from "../models/Project.js"; // ✅ Import Model to use sort() directly
+import Project from "../models/Profile.js"; // ✅ Import Model to use sort() directly
 import { createProject, updateProject, deleteProject } from "../controllers/projectController.js";
 
 const router = express.Router();
