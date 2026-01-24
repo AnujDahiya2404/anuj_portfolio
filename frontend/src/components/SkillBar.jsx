@@ -39,7 +39,7 @@ const SkillBar = ({ name, level = 0, color = "#999" }) => {
           fontSize: "14px",
           fontWeight: "500",
           whiteSpace: "nowrap",
-          color: "#0e0e0e"
+          color: hovered ? "#fff" : "#0e0e0e"
         }}
       >
         {name}
