@@ -16,10 +16,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/profile", profileRoutes);
+app.use("/api/profiles", profileRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/projects", projectRoutes);
-app.use("/api/education", educationRoutes);
+app.use("/api/educations", educationRoutes);
 
 app.get("/", (req, res) => {
   res.send("Portfolio backend running 🚀");
