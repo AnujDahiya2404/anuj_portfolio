@@ -16,7 +16,6 @@ const SkillBar = ({ name, level = 0, color = "#999" }) => {
         overflow: "hidden",
         cursor: "default",
         transform: hovered ? "scale(1.05)" : "scale(1)",
-        transition: "transform 0.25s ease",
         width: "fit-content" // ✅ text-sized pill
       }}
     >
