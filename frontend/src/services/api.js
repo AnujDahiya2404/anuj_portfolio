@@ -1,6 +1,4 @@
-const BASE_URL = window.location.hostname === "localhost"
-  ? "http://localhost:5000/api" 
-  : "https://anuj-portfolio-api-yqqt.onrender.com"; // ✅ Fixed: Added /api and removed trailing slash
+const BASE_URL = "https://anuj-portfolio-api-yqqt.onrender.com"; // ✅ Fixed: Added /api and removed trailing slash
 
 // ... rest of your code
 
