@@ -24,11 +24,10 @@ const Dashboard = () => {
   const [editingSkillId, setEditingSkillId] = useState(null);
 
   // --- FORM STATE ---
-  const [newProject, setNewProject] = useState({ title: "", description: "", techStack: "", githubLink: "", liveLink: "" });
+  // ✅ 1. ADDED 'image' to state
+  const [newProject, setNewProject] = useState({ title: "", description: "", techStack: "", githubLink: "", liveLink: "", image: "" });
   
-  // ✅ UPDATED STATE: Added order and categoryOrder
   const [newSkill, setNewSkill] = useState({ name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 }); 
-  
   const [newEdu, setNewEdu] = useState({ degree: "", branch: "", school: "", year: "", grade: "", description: "" });
 
   useEffect(() => {
@@ -57,11 +56,35 @@ const Dashboard = () => {
   const startEditingEdu = (edu) => { setEditingEduId(edu._id); setNewEdu(edu); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); };
   const handleDeleteEdu = async (id) => { if(window.confirm("Delete?")) { await deleteEducation(id); loadAllData(); }};
 
-  const handleProjectSubmit = async (e) => { e.preventDefault(); const techStackArray = typeof newProject.techStack === 'string' ? newProject.techStack.split(",").map(t => t.trim()) : newProject.techStack; const payload = { ...newProject, techStack: techStackArray }; if (editingProjId) { await updateProject(editingProjId, payload); setEditingProjId(null); } else { await createProject(payload); } setNewProject({ title: "", description: "", techStack: "", githubLink: "", liveLink: "" }); loadAllData(); };
-  const startEditingProject = (proj) => { setEditingProjId(proj._id); setNewProject({ ...proj, techStack: proj.techStack.join(", ") }); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); };
+  const handleProjectSubmit = async (e) => { 
+    e.preventDefault(); 
+    const techStackArray = typeof newProject.techStack === 'string' ? newProject.techStack.split(",").map(t => t.trim()) : newProject.techStack; 
+    const payload = { ...newProject, techStack: techStackArray }; 
+    
+    if (editingProjId) { 
+      await updateProject(editingProjId, payload); 
+      setEditingProjId(null); 
+    } else { 
+      await createProject(payload); 
+    } 
+    // ✅ 2. RESET 'image' state on submit
+    setNewProject({ title: "", description: "", techStack: "", githubLink: "", liveLink: "", image: "" }); 
+    loadAllData(); 
+  };
+
+  const startEditingProject = (proj) => { 
+    setEditingProjId(proj._id); 
+    // ✅ 3. LOAD existing image when editing
+    setNewProject({ 
+      ...proj, 
+      techStack: proj.techStack.join(", "), 
+      image: proj.image || "" 
+    }); 
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); 
+  };
+
   const handleDeleteProject = async (id) => { if(window.confirm("Delete?")) { await deleteProject(id); loadAllData(); }};
 
-  // ✅ UPDATED SKILL HANDLERS
   const handleSkillSubmit = async (e) => { e.preventDefault(); if (editingSkillId) { await updateSkill(editingSkillId, newSkill); setEditingSkillId(null); } else { await createSkill(newSkill); } setNewSkill({ name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 }); loadAllData(); };
   const startEditingSkill = (skill) => { setEditingSkillId(skill._id); setNewSkill(skill); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); };
   const handleDeleteSkill = async (id) => { if(window.confirm("Delete?")) { await deleteSkill(id); loadAllData(); }};
@@ -178,11 +201,20 @@ const Dashboard = () => {
               <input style={inputStyle} placeholder="Title" value={newProject.title} onChange={e => setNewProject({...newProject, title: e.target.value})} required />
               <textarea style={{...inputStyle, height: "100px"}} placeholder="Description" value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} required />
               <input style={inputStyle} placeholder="Tech Stack (comma separated)" value={newProject.techStack} onChange={e => setNewProject({...newProject, techStack: e.target.value})} required />
+              
+              {/* ✅ 4. ADDED IMAGE INPUT */}
+              <input 
+                style={inputStyle} 
+                placeholder="Image Path (e.g. /project-images/tennis.png)" 
+                value={newProject.image} 
+                onChange={(e) => setNewProject({...newProject, image: e.target.value})} 
+              />
+              
               <input style={inputStyle} placeholder="GitHub Link" value={newProject.githubLink} onChange={e => setNewProject({...newProject, githubLink: e.target.value})} />
               <input style={inputStyle} placeholder="Live Link" value={newProject.liveLink} onChange={e => setNewProject({...newProject, liveLink: e.target.value})} />
               <div style={{display:"flex", gap:"10px"}}>
                 <button type="submit" style={btnPrimary}>{editingProjId ? "Update Project" : "Add Project"}</button>
-                {editingProjId && <button type="button" onClick={() => { setEditingProjId(null); setNewProject({title:"", description:"", techStack:"", githubLink:"", liveLink:""}); }} style={btnCancel}>Cancel</button>}
+                {editingProjId && <button type="button" onClick={() => { setEditingProjId(null); setNewProject({title:"", description:"", techStack:"", githubLink:"", liveLink:"", image:""}); }} style={btnCancel}>Cancel</button>}
               </div>
             </form>
           </div>
@@ -227,13 +259,13 @@ const Dashboard = () => {
                  </datalist>
               </div>
 
-              {/* ✅ NEW: CATEGORY PRIORITY */}
+              {/* CATEGORY PRIORITY */}
               <div style={{ width: "90px" }}>
                 <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Cat. Order</label>
                 <input type="number" style={inputStyle} placeholder="1, 2..." value={newSkill.categoryOrder || 0} onChange={e => setNewSkill({...newSkill, categoryOrder: Number(e.target.value)})} />
               </div>
 
-              {/* ✅ NEW: SKILL PRIORITY */}
+              {/* SKILL PRIORITY */}
               <div style={{ width: "70px" }}>
                 <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Order</label>
                 <input type="number" style={inputStyle} placeholder="1..." value={newSkill.order || 0} onChange={e => setNewSkill({...newSkill, order: Number(e.target.value)})} />
