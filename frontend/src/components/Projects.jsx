@@ -8,7 +8,12 @@ const Projects = () => {
   const [direction, setDirection] = useState("slide-from-right");
 
   useEffect(() => {
-    getProjects().then(setProjects);
+    getProjects().then((data) => {
+      // ✅ FIX: Force sort by 'order' on the frontend
+      // If a project has no order, it defaults to 0
+      const sortedData = [...data].sort((a, b) => (a.order || 0) - (b.order || 0));
+      setProjects(sortedData);
+    });
   }, []);
 
   const nextProject = () => {
@@ -81,11 +86,11 @@ const Projects = () => {
       >
         {/* CARD ROW (Desktop: Arrows on sides | Mobile: Card only) */}
         <div
-          className="projects-row" // Added class for mobile override
+          className="projects-row"
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between", // Desktop default
+            justifyContent: "space-between",
             gap: "24px",
             width: "100%",
             height: "100%"
@@ -125,7 +130,7 @@ const Projects = () => {
 
         {/* DOT INDICATORS */}
         <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
-          {projects.map((_, idx) => (
+          {projects.map((p, idx) => (
             <div 
               key={idx}
               className={`carousel-dot ${idx === currentIndex ? "active" : ""}`}

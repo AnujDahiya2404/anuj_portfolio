@@ -24,8 +24,10 @@ const Dashboard = () => {
   const [editingSkillId, setEditingSkillId] = useState(null);
 
   // --- FORM STATE ---
-  // ✅ 1. ADDED 'image' to state
-  const [newProject, setNewProject] = useState({ title: "", description: "", techStack: "", githubLink: "", liveLink: "", image: "" });
+  // ✅ 1. FIXED: Added 'order: 0' to the initial state
+  const [newProject, setNewProject] = useState({ 
+    title: "", description: "", techStack: "", githubLink: "", liveLink: "", image: "", order: 0 
+  });
   
   const [newSkill, setNewSkill] = useState({ name: "", category: "", level: 80, color: "#000000", order: 0, categoryOrder: 0 }); 
   const [newEdu, setNewEdu] = useState({ degree: "", branch: "", school: "", year: "", grade: "", description: "" });
@@ -67,18 +69,19 @@ const Dashboard = () => {
     } else { 
       await createProject(payload); 
     } 
-    // ✅ 2. RESET 'image' state on submit
-    setNewProject({ title: "", description: "", techStack: "", githubLink: "", liveLink: "", image: "" }); 
+    // ✅ 2. FIXED: Reset 'order' to 0 on submit
+    setNewProject({ title: "", description: "", techStack: "", githubLink: "", liveLink: "", image: "", order: 0 }); 
     loadAllData(); 
   };
 
   const startEditingProject = (proj) => { 
     setEditingProjId(proj._id); 
-    // ✅ 3. LOAD existing image when editing
+    // ✅ 3. FIXED: Load existing order from DB
     setNewProject({ 
       ...proj, 
       techStack: proj.techStack.join(", "), 
-      image: proj.image || "" 
+      image: proj.image || "",
+      order: proj.order || 0 
     }); 
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); 
   };
@@ -188,7 +191,11 @@ const Dashboard = () => {
             <div style={{ display: "flex", flexDirection: "column", gap: "15px", marginBottom: "40px" }}>
               {projects.map(p => (
                 <div key={p._id} style={listItemStyle}>
-                  <div><strong style={{ fontSize: "1.2rem" }}>{p.title}</strong><br/><small>{p.techStack.join(", ")}</small></div>
+                  <div>
+                    {/* Display Rank to verify it worked */}
+                    <strong style={{ fontSize: "1.2rem", color: "#555" }}>#{p.order || 0}</strong>&nbsp;
+                    <strong style={{ fontSize: "1.2rem" }}>{p.title}</strong><br/><small>{p.techStack.join(", ")}</small>
+                  </div>
                   <div style={{display:"flex", gap:"10px"}}>
                     <button onClick={() => startEditingProject(p)} style={btnEdit}>Edit</button>
                     <button onClick={() => handleDeleteProject(p._id)} style={btnDelete}>Delete</button>
@@ -198,11 +205,28 @@ const Dashboard = () => {
             </div>
             <h3 style={sectionHeader}>{editingProjId ? "Edit Project" : "Add Project"}</h3>
             <form onSubmit={handleProjectSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px", maxWidth: "800px" }}>
-              <input style={inputStyle} placeholder="Title" value={newProject.title} onChange={e => setNewProject({...newProject, title: e.target.value})} required />
+              
+              <div style={{ display: "flex", gap: "15px" }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Title</label>
+                  <input style={inputStyle} placeholder="Title" value={newProject.title} onChange={e => setNewProject({...newProject, title: e.target.value})} required />
+                </div>
+                {/* ✅ 4. FIXED: Added the Rank Input here */}
+                <div style={{ width: "80px" }}>
+                  <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Rank</label>
+                  <input 
+                    type="number" 
+                    style={inputStyle} 
+                    placeholder="1" 
+                    value={newProject.order} 
+                    onChange={(e) => setNewProject({...newProject, order: Number(e.target.value)})} 
+                  />
+                </div>
+              </div>
+
               <textarea style={{...inputStyle, height: "100px"}} placeholder="Description" value={newProject.description} onChange={e => setNewProject({...newProject, description: e.target.value})} required />
               <input style={inputStyle} placeholder="Tech Stack (comma separated)" value={newProject.techStack} onChange={e => setNewProject({...newProject, techStack: e.target.value})} required />
               
-              {/* ✅ 4. ADDED IMAGE INPUT */}
               <input 
                 style={inputStyle} 
                 placeholder="Image Path (e.g. /project-images/tennis.png)" 
@@ -214,7 +238,7 @@ const Dashboard = () => {
               <input style={inputStyle} placeholder="Live Link" value={newProject.liveLink} onChange={e => setNewProject({...newProject, liveLink: e.target.value})} />
               <div style={{display:"flex", gap:"10px"}}>
                 <button type="submit" style={btnPrimary}>{editingProjId ? "Update Project" : "Add Project"}</button>
-                {editingProjId && <button type="button" onClick={() => { setEditingProjId(null); setNewProject({title:"", description:"", techStack:"", githubLink:"", liveLink:"", image:""}); }} style={btnCancel}>Cancel</button>}
+                {editingProjId && <button type="button" onClick={() => { setEditingProjId(null); setNewProject({title:"", description:"", techStack:"", githubLink:"", liveLink:"", image:"", order: 0}); }} style={btnCancel}>Cancel</button>}
               </div>
             </form>
           </div>
@@ -228,7 +252,6 @@ const Dashboard = () => {
               {skills.map(s => (
                 <div key={s._id} style={{ ...listItemStyle, borderRadius: "20px", padding: "8px 15px", display: "inline-flex", width: "auto" }}>
                   <span style={{ marginRight: "10px" }}>
-                    {/* Display Order in UI for reference */}
                     <b style={{marginRight:"5px", color:"#555"}}>#{s.order || 0}</b>
                     {s.name} 
                     <small style={{opacity: 0.6, marginLeft:"5px"}}>({s.category})</small>
@@ -259,13 +282,11 @@ const Dashboard = () => {
                  </datalist>
               </div>
 
-              {/* CATEGORY PRIORITY */}
               <div style={{ width: "90px" }}>
                 <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Cat. Order</label>
                 <input type="number" style={inputStyle} placeholder="1, 2..." value={newSkill.categoryOrder || 0} onChange={e => setNewSkill({...newSkill, categoryOrder: Number(e.target.value)})} />
               </div>
 
-              {/* SKILL PRIORITY */}
               <div style={{ width: "70px" }}>
                 <label style={{display:"block", marginBottom:"5px", fontSize:"12px"}}>Order</label>
                 <input type="number" style={inputStyle} placeholder="1..." value={newSkill.order || 0} onChange={e => setNewSkill({...newSkill, order: Number(e.target.value)})} />

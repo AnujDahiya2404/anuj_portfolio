@@ -22,6 +22,11 @@ const projectSchema = new mongoose.Schema(
     },
     image: {
       type: String
+    },
+    // ✅ ADDED: Order field for ranking (1, 2, 3...)
+    order: {
+      type: Number,
+      default: 0
     }
   },
   { timestamps: true }
